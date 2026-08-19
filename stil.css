@@ -1,0 +1,848 @@
+/* ══════════════════════════════════════════════
+   Knopf Immobilien — WEG-Verwaltung
+   Gestaltung abgeleitet aus dem Logo:
+   schwarz auf warmem Off-White, weit gesperrte Versalien.
+   ══════════════════════════════════════════════ */
+
+:root {
+  --grund:        #F7F6F3;   /* Papierton, passt zum Logo-Hintergrund */
+  --grund-tief:   #EFEDE8;
+  --dunkel:       #16161A;
+  --tinte:        #1A1A1A;
+  --gedaempft:    #6E6B65;
+  --linie:        #DDD9D2;
+  --weiss:        #FFFFFF;
+  --breite:       1180px;
+  --sperr:        0.22em;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--grund);
+  color: var(--tinte);
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 300;
+  font-size: 17px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; display: block; }
+
+/* Logo ist freigestellt (PNG mit Transparenz) — kein Blendmodus nötig */
+
+/* ── Typografie ────────────────────────────── */
+
+h1, h2, h3 { font-weight: 300; letter-spacing: 0.02em; line-height: 1.25; margin: 0 0 .6em; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.5rem); }
+h2 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); }
+h3 { font-size: 1.12rem; font-weight: 500; letter-spacing: .04em; }
+
+p { margin: 0 0 1.1em; }
+
+.ober {
+  font-size: .7rem;
+  font-weight: 500;
+  letter-spacing: var(--sperr);
+  text-transform: uppercase;
+  color: var(--gedaempft);
+  margin-bottom: 1.4em;
+}
+
+.einleitung { max-width: 62ch; color: var(--gedaempft); font-size: 1.06rem; }
+.fuehrung   { max-width: 52ch; color: var(--gedaempft); font-size: 1.09rem; }
+.nachsatz   { margin-top: 3rem; color: var(--gedaempft); font-size: .95rem; max-width: 62ch; }
+
+/* Platzhalter — muss vor dem Livegang raus */
+.tbd {
+  background: #FFF3C4;
+  border-left: 3px solid #E0B400;
+  padding: .55em .9em;
+  font-size: .88rem;
+  color: #5C4A00;
+  display: block;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── Schaltflächen ─────────────────────────── */
+
+.knopf {
+  display: inline-block;
+  background: var(--dunkel);
+  color: var(--grund);
+  text-decoration: none;
+  padding: 1.05em 2.4em;
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: var(--sperr);
+  text-transform: uppercase;
+  border: 1px solid var(--dunkel);
+  transition: background .25s, color .25s;
+}
+.knopf:hover { background: transparent; color: var(--dunkel); }
+.knopf--klein { padding: .75em 1.6em; }
+
+.verweis {
+  color: var(--tinte);
+  text-decoration: none;
+  font-size: .8rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--linie);
+  padding-bottom: .3em;
+  transition: border-color .25s;
+}
+.verweis:hover { border-color: var(--tinte); }
+
+/* ── Kopf ──────────────────────────────────── */
+
+.kopf {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  max-width: var(--breite);
+  margin: 0 auto;
+  padding: 1.8rem 2rem;
+}
+.kopf__logo img { width: 210px; }
+
+.kopf__nav { display: flex; align-items: center; gap: 2.4rem; }
+.kopf__nav a {
+  color: var(--tinte);
+  text-decoration: none;
+  font-size: .72rem;
+  font-weight: 400;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.kopf__nav a:not(.knopf):hover { color: var(--gedaempft); }
+.kopf__nav a.knopf { color: var(--grund); }
+.kopf__nav a.knopf:hover { color: var(--dunkel); }
+
+.kopf__schalter {
+  display: none;
+  background: none; border: 0; cursor: pointer;
+  width: 34px; height: 34px; padding: 8px;
+}
+.kopf__schalter span { display: block; height: 1px; background: var(--tinte); margin: 5px 0; }
+
+/* ── Aufmacher ─────────────────────────────── */
+
+.held {
+  max-width: var(--breite);
+  margin: 2rem auto 6rem;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 5rem;
+  align-items: center;
+}
+.held h1 { margin-bottom: .5em; }
+.held__aktionen { display: flex; align-items: center; gap: 2.2rem; flex-wrap: wrap; margin-top: 2.6rem; }
+
+.held__bild { position: relative; max-width: 400px; width: 100%; justify-self: end; }
+.held__bild img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 18%;
+  filter: grayscale(100%) contrast(1.03);
+}
+.bildunterschrift {
+  margin: 1rem 0 0;
+  font-size: .68rem;
+  letter-spacing: var(--sperr);
+  text-transform: uppercase;
+  color: var(--gedaempft);
+}
+
+/* ── Vertrauensleiste ──────────────────────── */
+
+.leiste {
+  border-top: 1px solid var(--linie);
+  border-bottom: 1px solid var(--linie);
+  max-width: var(--breite);
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+.leiste strong {
+  display: block;
+  font-weight: 500;
+  font-size: .8rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: .6em;
+}
+.leiste span { color: var(--gedaempft); font-size: .95rem; }
+
+/* ── Blöcke ────────────────────────────────── */
+
+.block {
+  max-width: var(--breite);
+  margin: 0 auto;
+  padding: 7rem 2rem;
+}
+
+.block--dunkel {
+  max-width: none;
+  background: var(--dunkel);
+  color: var(--grund);
+  margin-top: 4rem;
+}
+.block--dunkel .ober,
+.block--dunkel .einleitung { color: #A6A29A; }
+.block--bild .einleitung { color: #CFCBC2; }
+.block--bild .kontakt__was { color: #BFBBB2; }
+.block--dunkel > *:not(.block__grund) { max-width: calc(var(--breite) - 4rem); margin-left: auto; margin-right: auto; }
+
+.block--geteilt {
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  gap: 5rem;
+  align-items: center;
+}
+.block__bild { max-width: 400px; }
+.block__bild img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 18%;
+  filter: grayscale(100%) contrast(1.03);
+}
+
+/* ── Leistungskarten ───────────────────────── */
+
+.karten {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--linie);
+  border: 1px solid var(--linie);
+  margin-top: 3.5rem;
+}
+.karte { background: var(--grund); padding: 2.6rem 2.2rem; }
+.karte h3 { text-transform: uppercase; margin-bottom: 1.4em; }
+.karte ul { list-style: none; margin: 0; padding: 0; }
+.karte li {
+  color: var(--gedaempft);
+  font-size: .95rem;
+  padding: .55em 0 .55em 1.4em;
+  position: relative;
+  border-top: 1px solid var(--linie);
+}
+.karte li:first-child { border-top: 0; }
+.karte li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 1.35em;
+  width: 6px; height: 1px;
+  background: var(--tinte);
+}
+
+/* ── Schritte ──────────────────────────────── */
+
+.schritte {
+  list-style: none;
+  margin: 3.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2.5rem;
+}
+.schritte li { border-top: 1px solid var(--tinte); padding-top: 1.6rem; }
+.schritte__nr {
+  display: block;
+  font-size: .7rem;
+  letter-spacing: var(--sperr);
+  color: var(--gedaempft);
+  margin-bottom: 1.2em;
+}
+.schritte h3 { text-transform: uppercase; margin-bottom: .8em; }
+.schritte p { color: var(--gedaempft); font-size: .93rem; margin: 0; }
+
+/* ── Kontakt ───────────────────────────────── */
+
+.kontakt { margin-top: 3.5rem; border-top: 1px solid #33333A; }
+.kontakt__zeile {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1.7rem 0;
+  border-bottom: 1px solid #33333A;
+  text-decoration: none;
+  color: inherit;
+}
+.kontakt__was {
+  font-size: .7rem;
+  letter-spacing: var(--sperr);
+  text-transform: uppercase;
+  color: #A6A29A;
+}
+.kontakt__wert { font-size: 1.15rem; }
+a.kontakt__zeile:hover .kontakt__wert:not(.tbd) { color: var(--weiss); }
+
+/* ── Fuß ───────────────────────────────────── */
+
+.fuss {
+  max-width: var(--breite);
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.fuss__logo { width: 165px; }
+.fuss__nav { display: flex; gap: 2rem; }
+.fuss__nav a {
+  color: var(--tinte);
+  text-decoration: none;
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.fuss__nav a:hover { color: var(--gedaempft); }
+.fuss__zeile { margin: 0; font-size: .75rem; color: var(--gedaempft); letter-spacing: .06em; }
+
+/* ── Rechtstexte ───────────────────────────── */
+
+.recht { max-width: 760px; margin: 0 auto; padding: 4rem 2rem 7rem; }
+.recht h2 { font-size: 1.3rem; margin-top: 2.8em; }
+.recht h2:first-of-type { margin-top: 1.5em; }
+.recht p, .recht li { color: var(--gedaempft); font-size: .97rem; }
+.recht a { color: var(--tinte); }
+
+/* ── Schmale Bildschirme ───────────────────── */
+
+@media (max-width: 900px) {
+  .held, .block--geteilt { grid-template-columns: 1fr; gap: 3rem; }
+  .held { margin-bottom: 4rem; }
+  .held__bild { max-width: 380px; }
+  .block--geteilt .block__bild { max-width: 340px; }
+  .karten, .schritte, .leiste { grid-template-columns: 1fr; }
+  .leiste { gap: 2rem; }
+  .schritte { gap: 2rem; }
+  .block { padding: 4.5rem 1.5rem; }
+
+  .kopf { padding: 1.4rem 1.5rem; flex-wrap: wrap; }
+  .kopf__logo img { width: 170px; }
+  .kopf__schalter { display: block; }
+  .kopf__nav {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.4rem;
+    padding-top: 1.6rem;
+  }
+  .kopf__nav--offen { display: flex; }
+
+  .held { padding: 0 1.5rem; }
+  .kontakt__zeile { grid-template-columns: 1fr; gap: .5rem; }
+  .fuss { padding: 3rem 1.5rem; }
+}
+
+/* ══════════════════════════════════════════════
+   Bildwelt — kühl, geometrisch, ohne Personen
+   ══════════════════════════════════════════════ */
+
+/* ── Bildband unter dem Aufmacher ───────────── */
+
+.band {
+  position: relative;
+  height: 46vh;
+  min-height: 300px;
+  max-height: 460px;
+  overflow: hidden;
+  margin-bottom: 5rem;
+  background: var(--dunkel);
+}
+.band img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  filter: grayscale(100%) contrast(1.06) brightness(.96);
+}
+
+/* feines Linienraster — gibt dem Bild den technischen Zug */
+.band__raster {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right,  rgba(247,246,243,.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(247,246,243,.16) 1px, transparent 1px);
+  background-size: 92px 92px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 72%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 72%);
+  pointer-events: none;
+}
+
+/* ── Anspruch: Text mit zwei Bildern ────────── */
+
+.anspruch {
+  max-width: var(--breite);
+  margin: 0 auto;
+  padding: 3rem 2rem 7rem;
+  display: grid;
+  grid-template-columns: 1fr .78fr 1.05fr;
+  grid-template-rows: auto;
+  gap: 2.5rem;
+  align-items: center;
+}
+.anspruch__text { padding-right: 1.5rem; }
+.anspruch__text p:last-child { color: var(--gedaempft); margin-bottom: 0; }
+
+.anspruch figure { margin: 0; overflow: hidden; }
+.anspruch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(100%) contrast(1.04);
+  transition: transform .8s ease;
+}
+.anspruch figure:hover img { transform: scale(1.03); }
+.anspruch__hoch { aspect-ratio: 3 / 4; }
+.anspruch__quer { aspect-ratio: 4 / 3; align-self: end; }
+
+/* ── Kontaktbereich mit Hintergrundbild ─────── */
+
+.block--bild { position: relative; overflow: hidden; }
+.block__grund {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  filter: grayscale(100%) contrast(1.1);
+  opacity: .34;
+  z-index: 0;
+}
+.block--bild > *:not(.block__grund) { position: relative; z-index: 1; }
+.block--bild::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(22,22,26,.58) 0%, rgba(22,22,26,.86) 80%);
+  z-index: 0;
+}
+
+/* ── Schmale Bildschirme ───────────────────── */
+
+@media (max-width: 900px) {
+  .band { height: 34vh; min-height: 220px; margin-bottom: 3rem; }
+  .band__raster { background-size: 56px 56px; }
+
+  .anspruch {
+    grid-template-columns: 1fr 1fr;
+    padding: 1rem 1.5rem 4.5rem;
+    gap: 1.2rem;
+  }
+  .anspruch__text { grid-column: 1 / -1; padding-right: 0; margin-bottom: 1rem; }
+  .anspruch__quer { align-self: stretch; }
+}
+
+/* ══════════════════════════════════════════════
+   Interaktion — Fragen, Rechner, Formular
+   ══════════════════════════════════════════════ */
+
+/* ── Aktiver Menüpunkt ─────────────────────── */
+
+.kopf__nav a { position: relative; padding-bottom: .25em; }
+.kopf__nav a:not(.knopf)::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 0; height: 1px;
+  background: var(--tinte);
+  transition: width .3s ease;
+}
+.kopf__nav a.kopf__nav--aktiv::after,
+.kopf__nav a:not(.knopf):hover::after { width: 100%; }
+
+/* ── Auftritt beim Scrollen ────────────────── */
+
+.auftritt {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .7s ease var(--verzug, 0ms), transform .7s ease var(--verzug, 0ms);
+}
+.auftritt--da { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auftritt { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Häufige Fragen ────────────────────────── */
+
+.fragen { margin-top: 3.5rem; border-top: 1px solid var(--linie); }
+
+.frage { border-bottom: 1px solid var(--linie); }
+.frage summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.6rem 3rem 1.6rem 0;
+  position: relative;
+  font-size: 1.05rem;
+  font-weight: 400;
+  transition: color .25s;
+}
+.frage summary::-webkit-details-marker { display: none; }
+.frage summary:hover { color: var(--gedaempft); }
+.frage summary:focus-visible { outline: 2px solid var(--tinte); outline-offset: 4px; }
+
+/* Plus, das sich zum Minus dreht */
+.frage summary::before,
+.frage summary::after {
+  content: '';
+  position: absolute;
+  right: .4rem; top: 50%;
+  background: var(--tinte);
+  transition: transform .3s ease, opacity .3s ease;
+}
+.frage summary::before { width: 14px; height: 1px; transform: translateY(-50%); }
+.frage summary::after  { width: 1px; height: 14px; right: 1.05rem; transform: translateY(-50%); }
+.frage[open] summary::after { transform: translateY(-50%) rotate(90deg); opacity: 0; }
+
+.frage__text {
+  padding: 0 3rem 1.8rem 0;
+  max-width: 68ch;
+  animation: aufklappen .35s ease;
+}
+.frage__text p { color: var(--gedaempft); font-size: .97rem; }
+.frage__text p:last-child { margin-bottom: 0; }
+
+@keyframes aufklappen {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .frage__text { animation: none; }
+}
+
+/* ── Angebotsrechner ───────────────────────── */
+
+.block--rechner { background: var(--grund-tief); max-width: none; }
+.block--rechner > * { max-width: calc(var(--breite) - 4rem); margin-left: auto; margin-right: auto; }
+
+.rechner {
+  margin-top: 3.5rem;
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.feld { display: block; margin-bottom: 2.6rem; border: 0; padding: 0; }
+.feld__name {
+  display: block;
+  font-size: .7rem;
+  letter-spacing: var(--sperr);
+  text-transform: uppercase;
+  color: var(--gedaempft);
+  margin-bottom: 1.1em;
+  padding: 0;
+}
+.feld__wert {
+  display: inline-block;
+  margin-top: .7rem;
+  font-size: 1.5rem;
+  font-weight: 300;
+}
+
+/* Schieberegler */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right,
+    var(--dunkel) 0 var(--fuellstand, 20%),
+    var(--linie) var(--fuellstand, 20%) 100%);
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--grund);
+  border: 1px solid var(--dunkel);
+  cursor: grab;
+  transition: transform .2s, background .2s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); background: var(--dunkel); }
+input[type="range"]::-moz-range-thumb {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--grund);
+  border: 1px solid var(--dunkel);
+  cursor: grab;
+}
+input[type="range"]:focus-visible { outline: 2px solid var(--tinte); outline-offset: 6px; }
+
+/* Auswahlfelder */
+.feld--wahl { margin-bottom: 2.2rem; }
+.wahl {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  padding: .5rem 0;
+  cursor: pointer;
+  font-size: .96rem;
+  color: var(--gedaempft);
+  transition: color .2s;
+}
+.wahl:hover { color: var(--tinte); }
+.wahl input { accent-color: var(--dunkel); width: 17px; height: 17px; cursor: pointer; }
+.wahl input:checked + span { color: var(--tinte); }
+
+/* Ergebnis */
+.rechner__ergebnis {
+  background: var(--grund);
+  border: 1px solid var(--linie);
+  padding: 2.6rem 2.4rem;
+  position: sticky;
+  top: 2rem;
+}
+.ergebnis__zeile { margin: 0 0 1.8rem; }
+.ergebnis__was {
+  display: block;
+  font-size: .7rem;
+  letter-spacing: var(--sperr);
+  text-transform: uppercase;
+  color: var(--gedaempft);
+  margin-bottom: .5em;
+}
+.ergebnis__wert { display: block; font-size: 1.35rem; font-weight: 300; }
+.ergebnis__zeile--gross .ergebnis__wert {
+  font-size: 2rem;
+  padding-bottom: .3em;
+  border-bottom: 1px solid var(--linie);
+}
+.ergebnis__hinweis { font-size: .82rem; color: var(--gedaempft); margin-bottom: 2rem; }
+.rechner__ergebnis .knopf { width: 100%; text-align: center; }
+
+/* ── Kontaktbereich mit Formular ───────────── */
+
+.kontaktraum {
+  margin-top: 3.5rem;
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 4.5rem;
+  align-items: start;
+}
+
+.anfrage__reihe { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; }
+
+.eingabe { display: block; margin-bottom: 1.6rem; }
+.eingabe__name {
+  display: block;
+  font-size: .7rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #BFBBB2;
+  margin-bottom: .7em;
+}
+.eingabe__name b { color: #8C8880; font-weight: 400; }
+
+.eingabe input,
+.eingabe select,
+.eingabe textarea {
+  width: 100%;
+  background: rgba(255,255,255,.05);
+  border: 1px solid #3A3A42;
+  color: var(--grund);
+  font-family: inherit;
+  font-size: .97rem;
+  font-weight: 300;
+  padding: .85em 1em;
+  transition: border-color .25s, background .25s;
+}
+.eingabe textarea { resize: vertical; min-height: 110px; }
+.eingabe select { appearance: none; cursor: pointer; }
+.eingabe input:hover,
+.eingabe select:hover,
+.eingabe textarea:hover { border-color: #55555F; }
+.eingabe input:focus,
+.eingabe select:focus,
+.eingabe textarea:focus {
+  outline: none;
+  border-color: var(--grund);
+  background: rgba(255,255,255,.09);
+}
+.eingabe input::placeholder,
+.eingabe textarea::placeholder { color: #77736C; }
+
+.eingabe__fehler {
+  display: block;
+  min-height: 1.1em;
+  margin-top: .4em;
+  font-size: .8rem;
+  color: #E6A5A5;
+}
+.eingabe--fehler input,
+.eingabe--fehler select,
+.eingabe--fehler textarea { border-color: #C77; }
+
+.zustimmung {
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+  margin: .6rem 0 .2rem;
+  font-size: .87rem;
+  color: #BFBBB2;
+  cursor: pointer;
+  line-height: 1.6;
+}
+.zustimmung input { margin-top: .28em; accent-color: var(--grund); width: 17px; height: 17px; cursor: pointer; }
+.zustimmung a { color: var(--grund); }
+.zustimmung b { color: #8C8880; font-weight: 400; }
+
+.falle { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.anfrage .knopf {
+  background: var(--grund);
+  color: var(--dunkel);
+  border-color: var(--grund);
+  margin-top: 1.4rem;
+}
+.anfrage .knopf:hover { background: transparent; color: var(--grund); }
+
+.anfrage__meldung { margin: 1.4rem 0 0; font-size: .9rem; min-height: 1.2em; }
+.anfrage__meldung--fehler { color: #E6A5A5; }
+.anfrage__meldung--gut { color: #A8D5B5; }
+.anfrage__fuss { margin: .8rem 0 0; font-size: .78rem; color: #8C8880; }
+.anfrage__fuss b { font-weight: 400; }
+
+.kontaktraum .kontakt { margin-top: 0; }
+/* In der schmalen Spalte stehen Bezeichnung und Wert untereinander */
+.kontaktraum .kontakt__zeile { grid-template-columns: 1fr; gap: .45rem; padding: 1.4rem 0; }
+
+/* ── Schmale Bildschirme ───────────────────── */
+
+@media (max-width: 900px) {
+  .rechner, .kontaktraum { grid-template-columns: 1fr; gap: 2.5rem; }
+  .rechner__ergebnis { position: static; padding: 2rem 1.6rem; }
+  .anfrage__reihe { grid-template-columns: 1fr; gap: 0; }
+  .frage summary { padding-right: 2.5rem; font-size: 1rem; }
+  .frage__text { padding-right: 0; }
+  .block--rechner > * { max-width: 100%; }
+}
+
+/* ══════════════════════════════════════════════
+   Scroll-Effekte
+   ══════════════════════════════════════════════ */
+
+/* ── Lesefortschritt ───────────────────────── */
+
+.fortschritt {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 60;
+  background: transparent;
+  pointer-events: none;
+}
+.fortschritt span {
+  display: block;
+  height: 100%;
+  background: var(--dunkel);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  will-change: transform;
+}
+
+/* ── Kopfzeile bleibt oben stehen ──────────── */
+
+.kopf {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--grund);
+  transition: padding .35s ease, box-shadow .35s ease, background .35s ease;
+}
+.kopf--klein {
+  padding-top: .9rem;
+  padding-bottom: .9rem;
+  background: rgba(247,246,243,.93);
+  backdrop-filter: saturate(1.4) blur(9px);
+  -webkit-backdrop-filter: saturate(1.4) blur(9px);
+  box-shadow: 0 1px 0 var(--linie);
+}
+.kopf__logo img { transition: width .35s ease; }
+.kopf--klein .kopf__logo img { width: 158px; }
+
+/* Ankersprünge dürfen nicht unter der Kopfzeile landen */
+section[id] { scroll-margin-top: 96px; }
+
+/* ── Langsamere Bilder brauchen Spielraum ──── */
+
+.band { isolation: isolate; }
+.band img {
+  height: 132%;
+  top: -16%;
+  position: relative;
+  will-change: transform;
+}
+.block__grund { height: 122%; top: -11%; will-change: transform; }
+
+/* ── Zoom in der Anspruch-Sektion ──────────── */
+
+.anspruch figure img { will-change: transform; transform-origin: center; }
+/* Der sanfte Zoom kommt beim Scrollen aus dem Skript —
+   der Überfahr-Effekt von vorher würde sich damit beißen. */
+.anspruch figure:hover img { transform: none; }
+
+/* ── Ablauf: Linie wächst beim Auftritt ────── */
+
+.schritte li { border-top: 0; position: relative; }
+.schritte li::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 1px;
+  background: var(--linie);
+}
+.schritte li::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 1px;
+  background: var(--tinte);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .9s cubic-bezier(.22,.61,.36,1) var(--verzug, 0ms);
+}
+.schritte li.auftritt--da::after { transform: scaleX(1); }
+
+.schritte__nr { transition: color .5s ease var(--verzug, 0ms); }
+.schritte li.auftritt--da .schritte__nr { color: var(--tinte); }
+
+@media (prefers-reduced-motion: reduce) {
+  .kopf, .kopf__logo img { transition: none; }
+  .band img, .block__grund { height: 100%; top: 0; transform: none !important; }
+  .anspruch figure img { transform: none !important; }
+  .schritte li::after { transition: none; transform: scaleX(1); }
+}
+
+@media (max-width: 900px) {
+  section[id] { scroll-margin-top: 76px; }
+  .kopf--klein .kopf__logo img { width: 140px; }
+}

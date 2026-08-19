@@ -1,0 +1,3 @@
+# Entwurfsstand — bitte nicht in den Index aufnehmen.
+User-agent: *
+Disallow: /

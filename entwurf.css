@@ -1,0 +1,20 @@
+/* Kennzeichnung des Entwurfsstands.
+   Vor dem echten Livegang: diese Datei löschen und die beiden
+   Verweise darauf aus index.html und bewegt.html entfernen. */
+.entwurfhinweis {
+  position: fixed;
+  left: 1rem; bottom: 1rem;
+  z-index: 200;
+  display: flex; align-items: center; gap: .6rem;
+  background: #16161A; color: #F7F6F3;
+  padding: .6rem 1rem;
+  font: 500 .66rem/1.4 'Montserrat', system-ui, sans-serif;
+  letter-spacing: .14em; text-transform: uppercase;
+  border: 1px solid #E0B400;
+  max-width: calc(100vw - 2rem);
+}
+.entwurfhinweis::before {
+  content: ''; width: 7px; height: 7px; flex: none;
+  background: #E0B400; border-radius: 50%;
+}
+@media print { .entwurfhinweis { display: none; } }
