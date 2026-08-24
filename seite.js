@@ -35,6 +35,12 @@ const PREISE = {
 
 const EMPFAENGER = 'info@knopfimmobilien.de';
 
+/* Adresse der Anfragenverwaltung. Ist sie gesetzt, geht das Formular
+   direkt dorthin und der Absender braucht kein E-Mail-Programm.
+   Bleibt sie leer, öffnet sich wie bisher eine vorbereitete E-Mail.
+   Beispiel: 'https://knopfimmobilien.de/anfrage.php'                */
+const ANFRAGE_ZIEL = '';
+
 /* ────────────────────────────────────────────── */
 
 const euro = new Intl.NumberFormat('de-DE', {
@@ -266,6 +272,68 @@ const rechner = (function () {
     }
 
     const d = Object.fromEntries(new FormData(formular).entries());
+    d.datenschutz = zustimmung.checked;
+
+    if (ANFRAGE_ZIEL) {
+      absendenPerLeitung(d);
+    } else {
+      absendenPerMailprogramm(d);
+    }
+  });
+
+  /* Weg 1: direkt an die Anfragenverwaltung.
+     Der Absender merkt nichts von E-Mail. */
+  async function absendenPerLeitung(d) {
+    const knopf = formular.querySelector('button[type="submit"]');
+    const beschriftung = knopf.textContent;
+    knopf.disabled = true;
+    knopf.textContent = 'Wird gesendet …';
+    meldung.textContent = '';
+
+    try {
+      const antwort = await fetch(ANFRAGE_ZIEL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(d)
+      });
+      const ergebnis = await antwort.json().catch(() => ({}));
+
+      if (antwort.ok && ergebnis.ok) {
+        formular.reset();
+        document.querySelectorAll('.eingabe__fehler').forEach(f => (f.textContent = ''));
+        document.querySelectorAll('.eingabe--fehler').forEach(f => f.classList.remove('eingabe--fehler'));
+        meldung.textContent =
+          'Vielen Dank, Ihre Anfrage ist eingegangen. Ich melde mich in Kürze bei Ihnen.';
+        meldung.classList.add('anfrage__meldung--gut');
+        return;
+      }
+
+      // Die Gegenstelle hat einzelne Felder bemängelt
+      if (antwort.status === 422 && ergebnis.fehler && typeof ergebnis.fehler === 'object') {
+        Object.entries(ergebnis.fehler).forEach(([name, text]) => {
+          const feld = formular.elements[name];
+          if (feld) fehlerZeigen(feld, text);
+        });
+        meldung.textContent = 'Bitte prüfen Sie die markierten Felder.';
+        meldung.classList.add('anfrage__meldung--fehler');
+        return;
+      }
+
+      throw new Error('unerwartete Antwort');
+    } catch (fehler) {
+      // Leitung gestört: nichts verlieren, auf das E-Mail-Programm ausweichen
+      meldung.textContent =
+        'Die Übertragung hat nicht geklappt. Ich öffne stattdessen Ihr E-Mail-Programm.';
+      meldung.classList.add('anfrage__meldung--fehler');
+      setTimeout(() => absendenPerMailprogramm(d, true), 900);
+    } finally {
+      knopf.disabled = false;
+      knopf.textContent = beschriftung;
+    }
+  }
+
+  /* Weg 2: vorbereitete E-Mail, wenn keine Verwaltung eingerichtet ist */
+  function absendenPerMailprogramm(d, stillschweigend = false) {
     const betreff = `Anfrage WEG-Verwaltung — ${d.ort}, ${d.einheiten} Einheiten`;
     const rumpf = [
       `Name:       ${d.name}`,
@@ -279,22 +347,18 @@ const rechner = (function () {
       'Nachricht:',
       d.nachricht || '—',
       '',
-      '— gesendet über knopf-immobilien.de'
+      '— gesendet über knopfimmobilien.de'
     ].join('\n');
 
     window.location.href =
       `mailto:${EMPFAENGER}?subject=${encodeURIComponent(betreff)}&body=${encodeURIComponent(rumpf)}`;
 
-    if (EMPFAENGER.includes('BITTE-EINTRAGEN')) {
-      meldung.textContent =
-        'Hinweis für den Betreiber: In seite.js ist noch keine echte Empfängeradresse hinterlegt.';
-      meldung.classList.add('anfrage__meldung--fehler');
-    } else {
+    if (!stillschweigend) {
       meldung.textContent =
         'Ihr E-Mail-Programm öffnet sich mit der fertigen Nachricht. Bitte dort noch auf Senden klicken.';
       meldung.classList.add('anfrage__meldung--gut');
     }
-  });
+  }
 })();
 
 /* ══ Abschnitte beim Scrollen einblenden ══ */
