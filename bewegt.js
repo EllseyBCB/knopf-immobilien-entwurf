@@ -151,10 +151,17 @@ function schleife() {
   const gesamt = document.documentElement.scrollHeight - innerHeight;
   balken.style.transform = `scaleX(${gesamt > 0 ? oben / gesamt : 0})`;
 
-  /* Das Band geht auf */
+  /* Das Band geht auf, dann fliegt der Schriftzug hinein */
   if (weite && weiteRahmen) {
     const a = anteil(weite);
     weiteRahmen.style.setProperty('--auf', klemme(a * 1.5, 0, 1).toFixed(3));
+
+    // Der Text setzt später ein, damit erst das Bild aufgeht.
+    // Ab 28 % geflogen, bei 72 % angekommen — danach bleibt er stehen.
+    const roh = klemme((a - 0.28) / 0.44, 0, 1);
+    // Weich abbremsen, damit es nach Landung aussieht und nicht nach Rutschen
+    const flug = 1 - Math.pow(1 - roh, 3);
+    weiteRahmen.style.setProperty('--flug', flug.toFixed(3));
   }
 
   /* Leistungen wechseln durch */
