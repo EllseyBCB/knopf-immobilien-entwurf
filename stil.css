@@ -506,18 +506,24 @@ a.kontakt__zeile:hover .kontakt__wert:not(.tbd) { color: var(--weiss); }
 .frage summary:hover { color: var(--gedaempft); }
 .frage summary:focus-visible { outline: 2px solid var(--tinte); outline-offset: 4px; }
 
-/* Plus, das sich zum Minus dreht */
+/* Plus, das sich zum Minus dreht.
+   Beide Striche hängen am selben Mittelpunkt: right/top geben den Punkt vor,
+   translate(50%, -50%) rückt jeden Strich um seine halbe Größe zurück.
+   Vorher waren sie an unterschiedlichen Kanten verankert — das ergab ein
+   sichtbar verschobenes Kreuz. */
 .frage summary::before,
 .frage summary::after {
   content: '';
   position: absolute;
-  right: .4rem; top: 50%;
+  right: 8px;
+  top: 50%;
   background: var(--tinte);
+  transform: translate(50%, -50%);
   transition: transform .3s ease, opacity .3s ease;
 }
-.frage summary::before { width: 14px; height: 1px; transform: translateY(-50%); }
-.frage summary::after  { width: 1px; height: 14px; right: 1.05rem; transform: translateY(-50%); }
-.frage[open] summary::after { transform: translateY(-50%) rotate(90deg); opacity: 0; }
+.frage summary::before { width: 15px; height: 1px; }
+.frage summary::after  { width: 1px;  height: 15px; }
+.frage[open] summary::after { transform: translate(50%, -50%) rotate(90deg); opacity: 0; }
 
 .frage__text {
   padding: 0 3rem 1.8rem 0;
