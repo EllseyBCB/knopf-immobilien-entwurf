@@ -13,19 +13,24 @@
    Alle Beträge netto, pro Einheit und Monat.                     */
 
 const PREISE = {
-  // Grundpreis je nach Größe der Anlage
-  staffel: [
-    { bis:  10, satz: 32.00 },
-    { bis:  25, satz: 27.00 },
-    { bis:  50, satz: 24.00 },
-    { bis: 100, satz: 21.00 },
-    { bis: Infinity, satz: 19.00 }
-  ],
-  aufschlagSondereigentum: 8.00,   // wenn zusätzlich SEV gewünscht
-  aufschlagAufzug:         1.50,
-  aufschlagGewerbe:        2.00,
-  mindestbetragMonat:    180.00,   // Untergrenze für sehr kleine Anlagen
-  spanne:                  0.12    // ± 12 %, daraus wird die Preisspanne
+  // Kleinste Anlage: drei Einheiten. Dort gelten diese beiden Eckwerte,
+  // je Einheit und Monat, netto.
+  aeltesteAnlage:  51.00,   // Baujahr 1970 oder älter -> teuerster Satz
+  neubau:          31.00,   // Baujahr im laufenden Jahr -> günstigster Satz
+
+  aeltestesBaujahr: 1970,   // alles Ältere wird wie 1970 gerechnet
+  mindestEinheiten:    3,   // darunter nimmt Knopf Immobilien keine Anlage an
+  hoechstEinheiten:  120,   // Ende des Reglers
+
+  // Mengeneffekt: Bei der größten Anlage sinkt der Satz auf diesen Anteil
+  // des Dreier-Satzes. Dazwischen läuft es weich, nicht in Stufen.
+  anteilBeiHoechstzahl: 0.58,
+
+  // Zusatzleistungen, getrennt ausgewiesen. Sie verändern den Grundsatz oben
+  // nicht, damit die Spanne von 31 bis 51 Euro belastbar bleibt.
+  sondereigentum: 8.00,
+  aufzug:         1.50,
+  gewerbe:        2.00
 };
 
 const EMPFAENGER = 'BITTE-EINTRAGEN@knopf-immobilien.de';
@@ -61,58 +66,89 @@ const ruhig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ══ Angebotsrechner ══ */
 
 const rechner = (function () {
-  const schieber = document.getElementById('einheiten');
-  if (!schieber) return null;
+  const schieberEinheiten = document.getElementById('einheiten');
+  const schieberBaujahr = document.getElementById('baujahr');
+  if (!schieberEinheiten || !schieberBaujahr) return null;
 
   const anzeigeEinheiten = document.getElementById('einheiten-wert');
+  const anzeigeBaujahr = document.getElementById('baujahr-wert');
   const ausgabeProEinheit = document.getElementById('preis-einheit');
+  const ausgabeZusatz = document.getElementById('preis-zusatz');
+  const zeileZusatz = document.getElementById('zusatz-zeile');
   const ausgabeGesamt = document.getElementById('preis-gesamt');
 
-  function satzFuer(anzahl) {
-    return PREISE.staffel.find(s => anzahl <= s.bis).satz;
+  // Neubau ist immer das laufende Jahr — der Regler wandert also mit.
+  const heuteJahr = new Date().getFullYear();
+  schieberBaujahr.max = String(heuteJahr);
+  if (Number(schieberBaujahr.value) > heuteJahr) schieberBaujahr.value = String(heuteJahr);
+
+  /* Grundsatz allein aus dem Baujahr, bezogen auf drei Einheiten.
+     1970 -> 51 Euro, laufendes Jahr -> 31 Euro, dazwischen gleichmäßig. */
+  function satzNachBaujahr(jahr) {
+    const spanne = heuteJahr - PREISE.aeltestesBaujahr;
+    const alter = Math.min(Math.max(jahr, PREISE.aeltestesBaujahr), heuteJahr);
+    const anteil = spanne <= 0 ? 0 : (alter - PREISE.aeltestesBaujahr) / spanne;
+    return PREISE.aeltesteAnlage - anteil * (PREISE.aeltesteAnlage - PREISE.neubau);
+  }
+
+  /* Mengeneffekt: 1,0 bei drei Einheiten, weich fallend bis zum Anteil
+     bei der Höchstzahl. Logarithmisch, weil der Aufwand je Einheit
+     anfangs stark und später kaum noch sinkt. */
+  const nenner = Math.log(PREISE.hoechstEinheiten / PREISE.mindestEinheiten);
+  function mengenfaktor(anzahl) {
+    const n = Math.max(anzahl, PREISE.mindestEinheiten);
+    const abfall = (1 - PREISE.anteilBeiHoechstzahl) / nenner;
+    return Math.max(1 - abfall * Math.log(n / PREISE.mindestEinheiten),
+                    PREISE.anteilBeiHoechstzahl);
   }
 
   function lesen() {
-    const anzahl = Number(schieber.value);
-    const umfang = document.querySelector('input[name="umfang"]:checked').value;
-    const zusatz = [...document.querySelectorAll('input[name="zusatz"]:checked')]
-      .map(e => e.value);
-    return { anzahl, umfang, zusatz };
+    return {
+      anzahl: Math.max(Number(schieberEinheiten.value), PREISE.mindestEinheiten),
+      baujahr: Number(schieberBaujahr.value),
+      umfang: document.querySelector('input[name="umfang"]:checked').value,
+      zusatz: [...document.querySelectorAll('input[name="zusatz"]:checked')].map(e => e.value)
+    };
   }
 
   function rechnen() {
-    const { anzahl, umfang, zusatz } = lesen();
+    const e = lesen();
+    const grund = satzNachBaujahr(e.baujahr) * mengenfaktor(e.anzahl);
 
-    let satz = satzFuer(anzahl);
-    if (umfang === 'weg_sev') satz += PREISE.aufschlagSondereigentum;
-    if (zusatz.includes('aufzug'))  satz += PREISE.aufschlagAufzug;
-    if (zusatz.includes('gewerbe')) satz += PREISE.aufschlagGewerbe;
+    let zusatz = 0;
+    if (e.umfang === 'weg_sev') zusatz += PREISE.sondereigentum;
+    if (e.zusatz.includes('aufzug')) zusatz += PREISE.aufzug;
+    if (e.zusatz.includes('gewerbe')) zusatz += PREISE.gewerbe;
 
-    const untenProEinheit = satz * (1 - PREISE.spanne);
-    const obenProEinheit  = satz * (1 + PREISE.spanne);
+    return { ...e, grund, zusatz, gesamt: (grund + zusatz) * e.anzahl };
+  }
 
-    // Mindestbetrag kann den Satz pro Einheit anheben
-    const untenGesamt = Math.max(untenProEinheit * anzahl, PREISE.mindestbetragMonat);
-    const obenGesamt  = Math.max(obenProEinheit  * anzahl, PREISE.mindestbetragMonat * 1.15);
-
-    return {
-      anzahl, umfang, zusatz,
-      proEinheit: [untenGesamt / anzahl, obenGesamt / anzahl],
-      gesamt: [untenGesamt, obenGesamt]
-    };
+  function fuellstand(schieber) {
+    const min = Number(schieber.min), max = Number(schieber.max);
+    return (Number(schieber.value) - min) / (max - min) * 100 + '%';
   }
 
   function zeichnen() {
     const e = rechnen();
-    anzeigeEinheiten.textContent = e.anzahl;
-    ausgabeProEinheit.textContent =
-      `${euroGenau.format(e.proEinheit[0])} – ${euroGenau.format(e.proEinheit[1])}`;
-    ausgabeGesamt.textContent =
-      `${euro.format(e.gesamt[0])} – ${euro.format(e.gesamt[1])}`;
 
-    // Füllstand des Schiebereglers sichtbar machen
-    const anteil = (e.anzahl - schieber.min) / (schieber.max - schieber.min) * 100;
-    schieber.style.setProperty('--fuellstand', anteil + '%');
+    anzeigeEinheiten.textContent = e.anzahl;
+    anzeigeBaujahr.textContent = e.baujahr <= PREISE.aeltestesBaujahr
+      ? PREISE.aeltestesBaujahr + ' oder älter'
+      : (e.baujahr >= heuteJahr ? e.baujahr + ' (Neubau)' : e.baujahr);
+
+    ausgabeProEinheit.textContent = euroGenau.format(e.grund);
+
+    if (e.zusatz > 0) {
+      zeileZusatz.hidden = false;
+      ausgabeZusatz.textContent = '+ ' + euroGenau.format(e.zusatz);
+    } else {
+      zeileZusatz.hidden = true;
+    }
+
+    ausgabeGesamt.textContent = euro.format(e.gesamt);
+
+    schieberEinheiten.style.setProperty('--fuellstand', fuellstand(schieberEinheiten));
+    schieberBaujahr.style.setProperty('--fuellstand', fuellstand(schieberBaujahr));
   }
 
   document.querySelectorAll('#rechner input').forEach(feld => {
@@ -134,6 +170,7 @@ const rechner = (function () {
   knopf.addEventListener('click', () => {
     const e = rechner.rechnen();
     formular.elements.einheiten.value = e.anzahl;
+    if (formular.elements.baujahr) formular.elements.baujahr.value = e.baujahr;
     formular.elements.umfang.value =
       e.umfang === 'weg_sev' ? 'WEG plus Sondereigentum' : 'Nur WEG-Verwaltung';
 
@@ -164,7 +201,8 @@ const rechner = (function () {
     name:     w => w.trim().length >= 2      || 'Bitte tragen Sie Ihren Namen ein.',
     email:    w => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(w.trim()) || 'Diese E-Mail-Adresse sieht nicht vollständig aus.',
     ort:      w => w.trim().length >= 2      || 'Bitte nennen Sie den Ort der Anlage.',
-    einheiten:w => Number(w) >= 1 && Number(w) <= 500 || 'Bitte eine Zahl zwischen 1 und 500.'
+    einheiten:w => Number(w) >= 3 && Number(w) <= 500
+      || 'Ab drei Einheiten aufwärts — darunter übernehme ich keine Verwaltung.'
   };
 
   function fehlerZeigen(feld, text) {
@@ -235,6 +273,7 @@ const rechner = (function () {
       `Telefon:    ${d.telefon || '—'}`,
       `Ort:        ${d.ort}`,
       `Einheiten:  ${d.einheiten}`,
+      `Baujahr:    ${d.baujahr || '—'}`,
       `Umfang:     ${d.umfang}`,
       '',
       'Nachricht:',

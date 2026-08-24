@@ -306,22 +306,34 @@
   <p class="ober">Was kostet das</p>
   <h2>Kostenrahmen in 20 Sekunden</h2>
   <p class="einleitung">
-    Stellen Sie die Größe Ihrer Anlage ein. Sie sehen sofort, in welchem Rahmen sich
-    die Vergütung bewegt — unverbindlich, das verbindliche Angebot kommt schriftlich.
+    Stellen Sie Größe und Baujahr Ihrer Anlage ein. Sie sehen sofort, in welchem
+    Rahmen sich die Vergütung bewegt — unverbindlich, das verbindliche Angebot kommt
+    schriftlich.
   </p>
 
   <p class="tbd">
-    PLATZHALTER — die Preise stammen NICHT von Jim. Sie stehen in seite.js ganz oben
-    unter PREISE und müssen durch seine echten Sätze ersetzt werden, bevor die Seite
-    online geht.
+    Die Preisregel ist hinterlegt, aber noch nicht von Jim freigegeben — vor dem
+    Livegang bestätigen lassen. Sie steht in seite.js ganz oben unter PREISE.
   </p>
 
   <div class="rechner">
     <div class="rechner__steuerung">
       <label class="feld" for="einheiten">
         <span class="feld__name">Anzahl der Einheiten</span>
-        <input type="range" id="einheiten" min="2" max="120" value="24" step="1">
-        <output class="feld__wert" id="einheiten-wert">24</output>
+        <input type="range" id="einheiten" min="3" max="120" value="12" step="1">
+        <output class="feld__wert" id="einheiten-wert">12</output>
+        <span class="feld__spanne"><span>3</span><span>120</span></span>
+      </label>
+
+      <label class="feld" for="baujahr">
+        <span class="feld__name">Baujahr der Anlage</span>
+        <input type="range" id="baujahr" min="1970" max="2026" value="1995" step="1">
+        <output class="feld__wert" id="baujahr-wert">1995</output>
+        <span class="feld__spanne"><span>1970 oder älter</span><span>Neubau</span></span>
+        <span class="feld__hinweis">
+          Ältere Anlagen brauchen mehr Betreuung — mehr Instandhaltung, mehr Fristen,
+          mehr Abstimmung. Das bildet der Satz ab.
+        </span>
       </label>
 
       <fieldset class="feld feld--wahl">
@@ -351,16 +363,21 @@
 
     <div class="rechner__ergebnis" aria-live="polite">
       <p class="ergebnis__zeile">
-        <span class="ergebnis__was">Pro Einheit und Monat</span>
+        <span class="ergebnis__was">WEG-Verwaltung, je Einheit und Monat</span>
         <span class="ergebnis__wert" id="preis-einheit">—</span>
+      </p>
+      <p class="ergebnis__zeile ergebnis__zusatz" id="zusatz-zeile" hidden>
+        <span class="ergebnis__was">Zusatzleistungen, je Einheit und Monat</span>
+        <span class="ergebnis__wert" id="preis-zusatz">—</span>
       </p>
       <p class="ergebnis__zeile ergebnis__zeile--gross">
         <span class="ergebnis__was">Für die ganze Anlage, im Monat</span>
         <span class="ergebnis__wert" id="preis-gesamt">—</span>
       </p>
       <p class="ergebnis__hinweis">
-        Alle Beträge netto, zuzüglich Umsatzsteuer. Sonderleistungen wie die Begleitung
-        größerer Baumaßnahmen werden gesondert vereinbart.
+        Alle Beträge netto, zuzüglich Umsatzsteuer. Die Verwaltung beginnt ab drei
+        Einheiten. Sonderleistungen wie die Begleitung größerer Baumaßnahmen werden
+        gesondert vereinbart.
       </p>
       <button type="button" class="knopf" id="rechner-uebernehmen">
         Werte in die Anfrage übernehmen
@@ -411,9 +428,17 @@
       <div class="anfrage__reihe">
         <label class="eingabe">
           <span class="eingabe__name">Anzahl Einheiten <b aria-hidden="true">*</b></span>
-          <input type="number" name="einheiten" min="1" max="500" required>
+          <input type="number" name="einheiten" min="3" max="500" required>
           <span class="eingabe__fehler"></span>
         </label>
+        <label class="eingabe">
+          <span class="eingabe__name">Baujahr</span>
+          <input type="number" name="baujahr" min="1800" max="2026" placeholder="z. B. 1985">
+          <span class="eingabe__fehler"></span>
+        </label>
+      </div>
+
+      <div class="anfrage__reihe">
         <label class="eingabe">
           <span class="eingabe__name">Umfang</span>
           <select name="umfang">

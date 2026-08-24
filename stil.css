@@ -846,3 +846,27 @@ section[id] { scroll-margin-top: 96px; }
   section[id] { scroll-margin-top: 76px; }
   .kopf--klein .kopf__logo img { width: 140px; }
 }
+
+/* ── Regler: Randbeschriftung und Erläuterung ── */
+
+.feld__spanne {
+  display: flex;
+  justify-content: space-between;
+  margin-top: .5rem;
+  font-size: .68rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gedaempft);
+}
+.feld__hinweis {
+  display: block;
+  margin-top: 1rem;
+  font-size: .84rem;
+  line-height: 1.6;
+  color: var(--gedaempft);
+  max-width: 46ch;
+}
+
+/* Zusatzleistungen im Ergebnis etwas zurückgenommen */
+.ergebnis__zusatz .ergebnis__wert { font-size: 1.05rem; color: var(--gedaempft); }
+.ergebnis__zusatz[hidden] { display: none; }
