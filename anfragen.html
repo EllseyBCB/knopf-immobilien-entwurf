@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Anfragen — Knopf Immobilien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  /* ══════════════════════════════════════════
+     Knopf Immobilien — Anfragen
+     Farben und Schrift aus dem Logo abgeleitet.
+     ══════════════════════════════════════════ */
+
+  :root {
+    --grund:      #F7F6F3;
+    --flaeche:    #FFFFFF;
+    --erhoben:    #FFFFFF;
+    --tinte:      #1A1A1A;
+    --dunkel:     #16161A;
+    --gedaempft:  #6E6B65;
+    --leise:      #8B877F;
+    --linie:      #DDD9D2;
+    --linie-zart: #E8E5DF;
+
+    --neu:        #1F6F4A;
+    --neu-grund:  #EAF2ED;
+    --arbeit:     #8A5E00;
+    --arbeit-grund: #FBF3E0;
+    --erledigt:   #8B877F;
+    --warnung:    #A03030;
+
+    --hinweis-grund: #FBF3E0;
+    --hinweis-kante: #C9A227;
+
+    --sperr: .2em;
+    --schrift: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  }
+
+  :root:not([data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:      #131316;
+      --flaeche:    #1B1B1F;
+      --erhoben:    #212126;
+      --tinte:      #EDEBE6;
+      --dunkel:     #EDEBE6;
+      --gedaempft:  #A7A29A;
+      --leise:      #8A857D;
+      --linie:      #33333A;
+      --linie-zart: #2A2A30;
+
+      --neu:        #6DBF92;
+      --neu-grund:  #1A2A21;
+      --arbeit:     #D9A72E;
+      --arbeit-grund: #2A2312;
+      --erledigt:   #8A857D;
+      --warnung:    #E08585;
+
+      --hinweis-grund: #2A2312;
+      --hinweis-kante: #C9A227;
+
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --grund:      #131316;
+    --flaeche:    #1B1B1F;
+    --erhoben:    #212126;
+    --tinte:      #EDEBE6;
+    --dunkel:     #EDEBE6;
+    --gedaempft:  #A7A29A;
+    --leise:      #8A857D;
+    --linie:      #33333A;
+    --linie-zart: #2A2A30;
+
+    --neu:        #6DBF92;
+    --neu-grund:  #1A2A21;
+    --arbeit:     #D9A72E;
+    --arbeit-grund: #2A2312;
+    --erledigt:   #8A857D;
+    --warnung:    #E08585;
+
+    --hinweis-grund: #2A2312;
+    --hinweis-kante: #C9A227;
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--grund);
+    color: var(--tinte);
+    font-family: var(--schrift);
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2 { font-weight: 400; margin: 0; text-wrap: balance; }
+
+  a { color: inherit; }
+
+  :focus-visible { outline: 2px solid var(--tinte); outline-offset: 3px; }
+
+
+  /* ── Anmeldeschritt (nur in der Vorschau) ── */
+
+  .tor { min-height: 100vh; display: grid; place-items: center; padding: 2rem 1.5rem; }
+  .tor__karte {
+    background: var(--flaeche); border: 1px solid var(--linie);
+    padding: 3rem 2.6rem; width: 100%; max-width: 420px; text-align: left;
+  }
+  .schluessel--gross { width: 40px; height: 54px; margin-bottom: 1.6rem; }
+  .tor__karte h1 { font-size: 1.3rem; letter-spacing: .16em; text-transform: uppercase; }
+  .tor__unter {
+    margin: .6rem 0 2.4rem; font-size: .66rem; letter-spacing: var(--sperr);
+    text-transform: uppercase; color: var(--gedaempft);
+  }
+  .tor__feld { display: block; margin-bottom: 1.5rem; }
+  .tor__feld span {
+    display: block; font-size: .64rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--gedaempft); margin-bottom: .7em;
+  }
+  .tor__feld input {
+    width: 100%; padding: .85em 1em; font-family: inherit; font-size: .95rem; font-weight: 300;
+    color: var(--tinte); background: var(--grund); border: 1px solid var(--linie);
+  }
+  .tor__feld input:focus { outline: none; border-color: var(--gedaempft); background: var(--flaeche); }
+  .tor__feld input::placeholder { color: var(--leise); font-size: .88rem; }
+  .tor__knopf {
+    width: 100%; padding: 1em 2em; cursor: pointer; font-family: inherit;
+    background: var(--dunkel); color: var(--grund); border: 1px solid var(--dunkel);
+    font-size: .68rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase;
+    transition: background .2s, color .2s;
+  }
+  .tor__knopf:hover { background: transparent; color: var(--dunkel); }
+  .tor__fuss {
+    margin: 2.2rem 0 0; font-size: .78rem; line-height: 1.65; color: var(--gedaempft);
+  }
+  .tor__fuss b { font-weight: 500; color: var(--tinte); }
+
+  /* ── Hinweisbalken ─────────────────────── */
+
+  .vorschau {
+    background: var(--hinweis-grund);
+    border-bottom: 1px solid var(--hinweis-kante);
+    padding: .9rem 1.5rem;
+  }
+  .vorschau__inhalt {
+    max-width: 900px; margin: 0 auto;
+    display: flex; gap: .9rem; align-items: flex-start;
+    font-size: .84rem; line-height: 1.55; color: var(--tinte);
+  }
+  .vorschau__punkt {
+    flex: none; width: 8px; height: 8px; margin-top: .5rem;
+    border-radius: 50%; background: var(--hinweis-kante);
+  }
+  .vorschau b { font-weight: 500; }
+
+  /* ── Kopf ──────────────────────────────── */
+
+  .kopf {
+    border-bottom: 1px solid var(--linie);
+    background: var(--flaeche);
+    padding: 1.9rem 1.5rem;
+  }
+  .kopf__inhalt {
+    max-width: 900px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem; flex-wrap: wrap;
+  }
+  .kopf h1 {
+    font-size: 1.35rem; letter-spacing: .16em; text-transform: uppercase;
+  }
+  .kopf__unter {
+    margin: .5rem 0 0; font-size: .68rem; letter-spacing: var(--sperr);
+    text-transform: uppercase; color: var(--gedaempft);
+  }
+  .kopf__schluessel { display: flex; align-items: center; gap: 1rem; }
+  .schluessel { width: 34px; height: 46px; flex: none; }
+  .schluessel path, .schluessel circle { stroke: var(--tinte); fill: none; stroke-width: 5; }
+
+  .abmelden {
+    font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    text-decoration: none; color: var(--gedaempft);
+    border-bottom: 1px solid var(--linie); padding-bottom: .3em;
+  }
+  .abmelden:hover { color: var(--tinte); border-color: var(--tinte); }
+
+  /* ── Rumpf ─────────────────────────────── */
+
+  .rumpf { max-width: 900px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
+
+  .filter { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+  .filter button {
+    cursor: pointer; font-family: inherit;
+    padding: .55em 1.05em;
+    background: var(--flaeche); color: var(--tinte);
+    border: 1px solid var(--linie);
+    font-size: .68rem; font-weight: 400; letter-spacing: .12em; text-transform: uppercase;
+    transition: border-color .18s, background .18s, color .18s;
+  }
+  .filter button:hover { border-color: var(--gedaempft); }
+  .filter button[aria-pressed="true"] {
+    background: var(--dunkel); color: var(--grund); border-color: var(--dunkel);
+  }
+  .filter .zahl { margin-left: .5em; color: var(--leise); font-variant-numeric: tabular-nums; }
+  .filter button[aria-pressed="true"] .zahl { color: inherit; opacity: .65; }
+
+  /* ── Eine Anfrage ──────────────────────── */
+
+  .liste { display: flex; flex-direction: column; gap: 1rem; }
+
+  .karte {
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-left: 3px solid var(--erledigt);
+    padding: 1.6rem 1.7rem;
+  }
+  .karte[data-stand="neu"] { border-left-color: var(--neu); }
+  .karte[data-stand="arbeit"] { border-left-color: var(--arbeit); }
+  .karte[data-stand="erledigt"] { opacity: .68; }
+
+  .karte__kopf {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 1rem; margin-bottom: 1.3rem;
+  }
+  .karte__kopf h2 { font-size: 1.1rem; font-weight: 500; }
+  .karte__wann {
+    margin: .3rem 0 0; font-size: .74rem; color: var(--gedaempft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .marke {
+    flex: none;
+    font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+    padding: .4em .8em; border: 1px solid currentColor; white-space: nowrap;
+  }
+  .marke[data-stand="neu"] { color: var(--neu); background: var(--neu-grund); }
+  .marke[data-stand="arbeit"] { color: var(--arbeit); background: var(--arbeit-grund); }
+  .marke[data-stand="erledigt"] { color: var(--erledigt); }
+
+  .daten {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: .95rem 1.4rem; margin: 0 0 1.3rem; padding: 1.15rem 0;
+    border-top: 1px solid var(--linie-zart); border-bottom: 1px solid var(--linie-zart);
+  }
+  .daten dt {
+    font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--leise); margin-bottom: .35em;
+  }
+  .daten dd { margin: 0; font-size: .92rem; word-break: break-word; }
+  .daten dd.zahl { font-variant-numeric: tabular-nums; }
+  .daten a { text-decoration: none; border-bottom: 1px solid var(--linie); }
+  .daten a:hover { border-color: var(--tinte); }
+
+  .nachricht {
+    background: var(--grund); border: 1px solid var(--linie-zart);
+    padding: 1rem 1.2rem; margin-bottom: 1.3rem;
+    font-size: .9rem; white-space: pre-line;
+  }
+
+  .werkzeug {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: .8rem; flex-wrap: wrap;
+  }
+  .staende { display: flex; gap: .35rem; flex-wrap: wrap; }
+
+  .klein {
+    cursor: pointer; font-family: inherit;
+    padding: .5em .95em;
+    background: transparent; color: var(--tinte);
+    border: 1px solid var(--linie);
+    font-size: .64rem; letter-spacing: .11em; text-transform: uppercase;
+    transition: border-color .18s, background .18s, color .18s;
+  }
+  .klein:hover { border-color: var(--gedaempft); }
+  .klein[aria-pressed="true"] {
+    background: var(--dunkel); color: var(--grund); border-color: var(--dunkel);
+  }
+  .klein--fort { color: var(--warnung); border-color: var(--linie); }
+  .klein--fort:hover { background: var(--warnung); color: var(--flaeche); border-color: var(--warnung); }
+
+  .notiz { margin-top: 1.1rem; display: flex; gap: .6rem; flex-wrap: wrap; align-items: flex-start; }
+  .notiz textarea {
+    flex: 1 1 240px; min-height: 2.7rem;
+    padding: .65em .85em; font-family: inherit; font-size: .86rem; font-weight: 300;
+    color: var(--tinte); background: var(--grund);
+    border: 1px solid var(--linie); resize: vertical;
+  }
+  .notiz textarea:focus { outline: none; border-color: var(--gedaempft); background: var(--flaeche); }
+
+  .leer {
+    border: 1px dashed var(--linie); padding: 3rem 1.5rem; text-align: center;
+    color: var(--gedaempft); font-size: .92rem;
+  }
+
+  .fuss {
+    max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem;
+    font-size: .78rem; line-height: 1.7; color: var(--gedaempft);
+  }
+  .fuss h2 {
+    font-size: .66rem; letter-spacing: var(--sperr); text-transform: uppercase;
+    color: var(--leise); margin-bottom: .9rem;
+  }
+  .fuss ol { margin: 0; padding-left: 1.2rem; }
+  .fuss li { margin-bottom: .5rem; }
+  .fuss code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: .92em; background: var(--flaeche);
+    border: 1px solid var(--linie-zart); padding: .1em .4em;
+  }
+
+  .stand-meldung {
+    position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%) translateY(1rem);
+    background: var(--dunkel); color: var(--grund);
+    padding: .7em 1.3em; font-size: .74rem; letter-spacing: .08em;
+    opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
+    z-index: 20; max-width: calc(100vw - 3rem); text-align: center;
+  }
+  .stand-meldung--da { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  @media (max-width: 620px) {
+    .kopf { padding: 1.4rem 1.2rem; }
+    .rumpf { padding: 1.6rem 1.2rem 4rem; }
+    .karte { padding: 1.3rem; }
+    .werkzeug { flex-direction: column; align-items: stretch; }
+    .werkzeug .klein--fort { align-self: flex-end; }
+  }
+</style>
+
+</head>
+<body>
+
+<div class="tor" id="tor">
+  <div class="tor__karte">
+    <svg class="schluessel schluessel--gross" viewBox="0 0 60 82" aria-hidden="true">
+      <circle cx="30" cy="24" r="21"/>
+      <circle cx="23" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+      <circle cx="37" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+      <circle cx="23" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+      <circle cx="37" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+      <path d="M30 45 L30 78"/><path d="M30 62 L46 62"/>
+      <path d="M46 62 L46 70"/><path d="M30 72 L42 72"/>
+    </svg>
+    <h1>Anfragen</h1>
+    <p class="tor__unter">Knopf Immobilien — WEG-Verwaltung</p>
+
+    <form id="tor-form" autocomplete="off">
+      <label class="tor__feld">
+        <span>Zugangscode</span>
+        <input type="password" id="tor-code" autocomplete="off" placeholder="Beliebige Eingabe genügt">
+      </label>
+      <button type="submit" class="tor__knopf">Anmelden</button>
+    </form>
+
+    <p class="tor__fuss">
+      <b>Dies ist eine Vorschau.</b> Hier wird nichts geprüft — eine beliebige Eingabe
+      öffnet die Ansicht. Die richtige Anwendung prüft den Zugangscode auf dem Server
+      und lässt ohne ihn niemanden hinein. Deshalb steht der echte Code hier
+      absichtlich nirgends.
+    </p>
+  </div>
+</div>
+
+<div class="vorschau" hidden>
+  <div class="vorschau__inhalt">
+    <span class="vorschau__punkt" aria-hidden="true"></span>
+    <p style="margin:0">
+      <b>Vorschau mit Beispieldaten.</b> So sieht die Anfragenverwaltung aus. Alles ist
+      bedienbar — Stand ändern, Notiz schreiben, filtern. Die echte Anwendung läuft auf
+      dem eigenen Webspace, ist durch einen Zugangscode geschützt und zeigt die
+      tatsächlichen Anfragen vom Kontaktformular.
+    </p>
+  </div>
+</div>
+
+<header class="kopf" hidden>
+  <div class="kopf__inhalt">
+    <div class="kopf__schluessel">
+      <svg class="schluessel" viewBox="0 0 60 82" aria-hidden="true">
+        <circle cx="30" cy="24" r="21"/>
+        <circle cx="23" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="37" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="23" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="37" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+        <path d="M30 45 L30 78"/>
+        <path d="M30 62 L46 62"/>
+        <path d="M46 62 L46 70"/>
+        <path d="M30 72 L42 72"/>
+      </svg>
+      <div>
+        <h1>Anfragen</h1>
+        <p class="kopf__unter">Knopf Immobilien — WEG-Verwaltung</p>
+      </div>
+    </div>
+    <a class="abmelden" href="#" onclick="return false">Abmelden</a>
+  </div>
+</header>
+
+<main class="rumpf" hidden>
+  <nav class="filter" id="filter" aria-label="Nach Stand filtern"></nav>
+  <div class="liste" id="liste"></div>
+</main>
+
+<footer class="fuss" hidden>
+  <h2>Wie es im Betrieb läuft</h2>
+  <ol>
+    <li>Jemand füllt das Kontaktformular auf der Website aus und sieht sofort eine
+      Bestätigung — kein E-Mail-Programm, kein Absenden von Hand.</li>
+    <li>Die Anfrage erscheint hier, mit Objekt, Anzahl der Einheiten, Baujahr und
+      Nachricht. E-Mail und Telefon sind anklickbar.</li>
+    <li>Der Stand wandert von <b>Neu</b> über <b>In Arbeit</b> zu <b>Erledigt</b>.
+      Notizen bleiben an der Anfrage.</li>
+    <li>Erledigte Anfragen lassen sich endgültig löschen. Nach einem Jahr erinnert die
+      Anwendung ans Aufräumen, weil personenbezogene Daten nicht länger aufbewahrt
+      werden dürfen als nötig.</li>
+  </ol>
+  <p style="margin-top:1.2rem">
+    Die Anwendung besteht aus wenigen Dateien und läuft auf jedem gewöhnlichen
+    Webhosting mit <code>PHP</code> und <code>HTTPS</code>. Kein fremder Dienst, kein
+    Konto bei Dritten, keine laufenden Kosten außer dem Webspace.
+  </p>
+</footer>
+
+<div class="stand-meldung" id="meldung" role="status" aria-live="polite"></div>
+
+<script type="application/json" id="zustand">
+{
+  "anfragen": [
+    {
+      "id": 1,
+      "eingegangen": "2026-08-24T09:12:00",
+      "name": "Beispiel: Martina Beirat",
+      "email": "beispiel-1@example.com",
+      "telefon": "0711 4455667",
+      "ort": "Stuttgart-Vaihingen",
+      "einheiten": 14,
+      "baujahr": 1978,
+      "umfang": "Nur WEG-Verwaltung",
+      "nachricht": "Unsere jetzige Verwaltung meldet sich seit Monaten nicht.\nWir sind 14 Parteien und suchen zum Jahreswechsel jemand Neues.",
+      "stand": "neu",
+      "notiz": ""
+    },
+    {
+      "id": 2,
+      "eingegangen": "2026-08-23T16:40:00",
+      "name": "Beispiel: Karl Weber",
+      "email": "beispiel-2@example.com",
+      "telefon": "",
+      "ort": "Ludwigsburg",
+      "einheiten": 6,
+      "baujahr": 2004,
+      "umfang": "WEG plus Sondereigentum",
+      "nachricht": "Kleine Anlage, sechs Einheiten. Bitte um ein Angebot inklusive Sondereigentumsverwaltung für zwei vermietete Wohnungen.",
+      "stand": "arbeit",
+      "notiz": "Rückruf für Donnerstag zugesagt."
+    },
+    {
+      "id": 3,
+      "eingegangen": "2026-08-21T11:05:00",
+      "name": "Beispiel: Renate Hofmann",
+      "email": "beispiel-3@example.com",
+      "telefon": "0170 1234567",
+      "ort": "Stuttgart-Feuerbach",
+      "einheiten": 9,
+      "baujahr": 1972,
+      "umfang": "Nur WEG-Verwaltung",
+      "nachricht": "Beirat hat den Wechsel bereits beschlossen. Wann könnten Sie übernehmen?",
+      "stand": "erledigt",
+      "notiz": "Angebot verschickt, Zusage erhalten. Übernahme zum 01.10."
+    }
+  ]
+}
+</script>
+
+<script>
+(() => {
+  'use strict';
+
+  /* Unveränderte Vorlage sichern, bevor irgendetwas gerendert wird.
+     Beim Speichern wird darin nur der Datenblock ausgetauscht. */
+  const VORLAGE = '<!doctype html>\n' + document.documentElement.outerHTML;
+
+  const STAENDE = {
+    neu:      'Neu',
+    arbeit:   'In Arbeit',
+    erledigt: 'Erledigt'
+  };
+
+  let zustand = JSON.parse(document.getElementById('zustand').textContent);
+  let filter = 'alle';
+  let artefakt = null;
+  let schreibend = false;
+
+  const liste = document.getElementById('liste');
+  const filterleiste = document.getElementById('filter');
+  const meldungsfeld = document.getElementById('meldung');
+
+  /* ── Hilfen ──────────────────────────── */
+
+  const maskieren = (text) => String(text ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+  function datumDeutsch(iso) {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return iso;
+    return d.toLocaleString('de-DE', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    }) + ' Uhr';
+  }
+
+  let meldungsUhr = null;
+  function melden(text) {
+    meldungsfeld.textContent = text;
+    meldungsfeld.classList.add('stand-meldung--da');
+    clearTimeout(meldungsUhr);
+    meldungsUhr = setTimeout(() => {
+      meldungsfeld.classList.remove('stand-meldung--da');
+    }, 2600);
+  }
+
+  /* ── Speichern ───────────────────────── */
+
+  function dokumentMitZustand() {
+    const neuerBlock =
+      '<script type="application/json" id="zustand">\n' +
+      JSON.stringify(zustand, null, 2) +
+      '\n<\/script>';
+    return VORLAGE.replace(
+      /<script type="application\/json" id="zustand">[\s\S]*?<\/script>/,
+      () => neuerBlock
+    );
+  }
+
+  let wartend = null;
+  function sichern() {
+    if (!artefakt) return;              // schreibgeschützte Ansicht
+    clearTimeout(wartend);
+    wartend = setTimeout(async () => {
+      if (schreibend) return;
+      schreibend = true;
+      try {
+        await artefakt.publish(dokumentMitZustand());
+      } catch (fehler) {
+        if (fehler && fehler.code === 'conflict') return;   // andere Ansicht war schneller
+        artefakt = null;                                     // z. B. nur Leserecht
+        melden('Änderungen gelten nur für diese Ansicht.');
+      } finally {
+        schreibend = false;
+      }
+    }, 700);
+  }
+
+  /* ── Zeichnen ────────────────────────── */
+
+  function zaehler() {
+    const z = { alle: zustand.anfragen.length, neu: 0, arbeit: 0, erledigt: 0 };
+    zustand.anfragen.forEach(a => { z[a.stand] = (z[a.stand] || 0) + 1; });
+    return z;
+  }
+
+  function filterZeichnen() {
+    const z = zaehler();
+    const punkte = [['alle', 'Alle'], ...Object.entries(STAENDE)];
+    filterleiste.innerHTML = punkte.map(([wert, name]) => `
+      <button type="button" data-filter="${wert}" aria-pressed="${filter === wert}">
+        ${name}<span class="zahl">${z[wert] || 0}</span>
+      </button>`).join('');
+  }
+
+  function karte(a) {
+    const felder = [
+      ['Objekt', maskieren(a.ort), false],
+      ['Einheiten', String(a.einheiten), true],
+      a.baujahr ? ['Baujahr', String(a.baujahr), true] : null,
+      a.umfang ? ['Umfang', maskieren(a.umfang), false] : null,
+      ['E-Mail', `<a href="mailto:${maskieren(a.email)}">${maskieren(a.email)}</a>`, false],
+      a.telefon ? ['Telefon', `<a href="tel:${maskieren(a.telefon.replace(/[^\d+]/g, ''))}">${maskieren(a.telefon)}</a>`, false] : null
+    ].filter(Boolean);
+
+    return `
+      <article class="karte" data-stand="${a.stand}" data-id="${a.id}">
+        <div class="karte__kopf">
+          <div>
+            <h2>${maskieren(a.name)}</h2>
+            <p class="karte__wann">${maskieren(datumDeutsch(a.eingegangen))}</p>
+          </div>
+          <span class="marke" data-stand="${a.stand}">${STAENDE[a.stand]}</span>
+        </div>
+
+        <dl class="daten">
+          ${felder.map(([name, wert, zahl]) =>
+            `<div><dt>${name}</dt><dd${zahl ? ' class="zahl"' : ''}>${wert}</dd></div>`).join('')}
+        </dl>
+
+        ${a.nachricht ? `<div class="nachricht">${maskieren(a.nachricht)}</div>` : ''}
+
+        <div class="werkzeug">
+          <div class="staende">
+            ${Object.entries(STAENDE).map(([wert, name]) => `
+              <button type="button" class="klein" data-stand-setzen="${wert}"
+                      aria-pressed="${a.stand === wert}">${name}</button>`).join('')}
+          </div>
+          <button type="button" class="klein klein--fort" data-fort="1">Löschen</button>
+        </div>
+
+        <div class="notiz">
+          <textarea data-notiz="1" rows="2"
+                    placeholder="Eigene Notiz zu dieser Anfrage">${maskieren(a.notiz)}</textarea>
+        </div>
+      </article>`;
+  }
+
+  function zeichnen() {
+    filterZeichnen();
+    const sichtbar = zustand.anfragen
+      .filter(a => filter === 'alle' || a.stand === filter)
+      .sort((a, b) => String(b.eingegangen).localeCompare(String(a.eingegangen)));
+
+    liste.innerHTML = sichtbar.length
+      ? sichtbar.map(karte).join('')
+      : `<p class="leer">Hier ist gerade nichts. Sobald jemand das Formular auf der
+           Website ausfüllt, erscheint die Anfrage an dieser Stelle.</p>`;
+  }
+
+  /* ── Bedienung ───────────────────────── */
+
+  filterleiste.addEventListener('click', (e) => {
+    const knopf = e.target.closest('[data-filter]');
+    if (!knopf) return;
+    filter = knopf.dataset.filter;
+    zeichnen();
+  });
+
+  liste.addEventListener('click', (e) => {
+    const karteEl = e.target.closest('.karte');
+    if (!karteEl) return;
+    const id = Number(karteEl.dataset.id);
+    const anfrage = zustand.anfragen.find(a => a.id === id);
+    if (!anfrage) return;
+
+    const standKnopf = e.target.closest('[data-stand-setzen]');
+    if (standKnopf) {
+      anfrage.stand = standKnopf.dataset.standSetzen;
+      zeichnen();
+      sichern();
+      melden('Stand: ' + STAENDE[anfrage.stand]);
+      return;
+    }
+
+    if (e.target.closest('[data-fort]')) {
+      zustand.anfragen = zustand.anfragen.filter(a => a.id !== id);
+      zeichnen();
+      sichern();
+      melden('Anfrage gelöscht.');
+    }
+  });
+
+  liste.addEventListener('input', (e) => {
+    const feld = e.target.closest('[data-notiz]');
+    if (!feld) return;
+    const id = Number(feld.closest('.karte').dataset.id);
+    const anfrage = zustand.anfragen.find(a => a.id === id);
+    if (!anfrage) return;
+    anfrage.notiz = feld.value;
+    sichern();
+  });
+
+  zeichnen();
+
+  /* Speichern anmelden, sobald die Ansicht es hergibt. Ohne das bleibt
+     alles bedienbar, nur eben nicht über die Sitzung hinaus. */
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('artifact')
+      .then(a => { artefakt = a; })
+      .catch(() => { artefakt = null; });
+  }
+})();
+</script>
+
+<script>
+  document.getElementById('tor-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('tor').hidden = true;
+    document.querySelector('.vorschau').hidden = false;
+    document.querySelector('.kopf').hidden = false;
+    document.querySelector('.rumpf').hidden = false;
+    document.querySelector('.fuss').hidden = false;
+    window.scrollTo(0, 0);
+  });
+  document.querySelector('.abmelden').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('tor').hidden = false;
+    document.querySelector('.vorschau').hidden = true;
+    document.querySelector('.kopf').hidden = true;
+    document.querySelector('.rumpf').hidden = true;
+    document.querySelector('.fuss').hidden = true;
+    document.getElementById('tor-code').value = '';
+    window.scrollTo(0, 0);
+  });
+</script>
+
+</body>
+</html>
