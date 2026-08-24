@@ -33,7 +33,7 @@ const PREISE = {
   gewerbe:        2.00
 };
 
-const EMPFAENGER = 'BITTE-EINTRAGEN@knopf-immobilien.de';
+const EMPFAENGER = 'info@knopfimmobilien.de';
 
 /* ────────────────────────────────────────────── */
 
