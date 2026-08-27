@@ -10,7 +10,8 @@ unberührt.  Aufruf:  python3 stempeln.py
 """
 import hashlib, pathlib, re
 
-SEITEN = ['index.html', 'bewegt.html', 'impressum.html', 'datenschutz.html']
+SEITEN = ['index.html', 'bewegt.html', 'impressum.html', 'datenschutz.html',
+          'verwaltung.html']
 MUSTER = re.compile(r'((?:href|src)=")([\w./-]+\.(?:css|js))(?:\?v=[0-9a-f]+)?(")')
 
 def stempel(name: str) -> str:

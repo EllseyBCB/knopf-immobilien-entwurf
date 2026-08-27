@@ -1,0 +1,365 @@
+
+  /* ══════════════════════════════════════════
+     Knopf Immobilien — Anfragen
+     Farben und Schrift aus dem Logo abgeleitet.
+     ══════════════════════════════════════════ */
+
+  :root {
+    --grund:      #F7F6F3;
+    --flaeche:    #FFFFFF;
+    --erhoben:    #FFFFFF;
+    --tinte:      #1A1A1A;
+    --dunkel:     #16161A;
+    --gedaempft:  #6E6B65;
+    --leise:      #8B877F;
+    --linie:      #DDD9D2;
+    --linie-zart: #E8E5DF;
+
+    --neu:        #1F6F4A;
+    --neu-grund:  #EAF2ED;
+    --arbeit:     #8A5E00;
+    --arbeit-grund: #FBF3E0;
+    --erledigt:   #8B877F;
+    --warnung:    #A03030;
+
+    --hinweis-grund: #FBF3E0;
+    --hinweis-kante: #C9A227;
+
+    --sperr: .2em;
+    --schrift: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+  }
+
+  :root:not([data-theme="light"]) {
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --grund:      #131316;
+      --flaeche:    #1B1B1F;
+      --erhoben:    #212126;
+      --tinte:      #EDEBE6;
+      --dunkel:     #EDEBE6;
+      --gedaempft:  #A7A29A;
+      --leise:      #8A857D;
+      --linie:      #33333A;
+      --linie-zart: #2A2A30;
+
+      --neu:        #6DBF92;
+      --neu-grund:  #1A2A21;
+      --arbeit:     #D9A72E;
+      --arbeit-grund: #2A2312;
+      --erledigt:   #8A857D;
+      --warnung:    #E08585;
+
+      --hinweis-grund: #2A2312;
+      --hinweis-kante: #C9A227;
+
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --grund:      #131316;
+    --flaeche:    #1B1B1F;
+    --erhoben:    #212126;
+    --tinte:      #EDEBE6;
+    --dunkel:     #EDEBE6;
+    --gedaempft:  #A7A29A;
+    --leise:      #8A857D;
+    --linie:      #33333A;
+    --linie-zart: #2A2A30;
+
+    --neu:        #6DBF92;
+    --neu-grund:  #1A2A21;
+    --arbeit:     #D9A72E;
+    --arbeit-grund: #2A2312;
+    --erledigt:   #8A857D;
+    --warnung:    #E08585;
+
+    --hinweis-grund: #2A2312;
+    --hinweis-kante: #C9A227;
+
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--grund);
+    color: var(--tinte);
+    font-family: var(--schrift);
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2 { font-weight: 400; margin: 0; text-wrap: balance; }
+
+  a { color: inherit; }
+
+  :focus-visible { outline: 2px solid var(--tinte); outline-offset: 3px; }
+
+
+  /* ── Anmeldeschritt (nur in der Vorschau) ── */
+
+  .tor { min-height: 100vh; display: grid; place-items: center; padding: 2rem 1.5rem; }
+  .tor__karte {
+    background: var(--flaeche); border: 1px solid var(--linie);
+    padding: 3rem 2.6rem; width: 100%; max-width: 420px; text-align: left;
+  }
+  .schluessel--gross { width: 40px; height: 54px; margin-bottom: 1.6rem; }
+  .tor__karte h1 { font-size: 1.3rem; letter-spacing: .16em; text-transform: uppercase; }
+  .tor__unter {
+    margin: .6rem 0 2.4rem; font-size: .66rem; letter-spacing: var(--sperr);
+    text-transform: uppercase; color: var(--gedaempft);
+  }
+  .tor__feld { display: block; margin-bottom: 1.5rem; }
+  .tor__feld span {
+    display: block; font-size: .64rem; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--gedaempft); margin-bottom: .7em;
+  }
+  .tor__feld input {
+    width: 100%; padding: .85em 1em; font-family: inherit; font-size: .95rem; font-weight: 300;
+    color: var(--tinte); background: var(--grund); border: 1px solid var(--linie);
+  }
+  .tor__feld input:focus { outline: none; border-color: var(--gedaempft); background: var(--flaeche); }
+  .tor__feld input::placeholder { color: var(--leise); font-size: .88rem; }
+  .tor__knopf {
+    width: 100%; padding: 1em 2em; cursor: pointer; font-family: inherit;
+    background: var(--dunkel); color: var(--grund); border: 1px solid var(--dunkel);
+    font-size: .68rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase;
+    transition: background .2s, color .2s;
+  }
+  .tor__knopf:hover { background: transparent; color: var(--dunkel); }
+  .tor__fuss {
+    margin: 2.2rem 0 0; font-size: .78rem; line-height: 1.65; color: var(--gedaempft);
+  }
+  .tor__fuss b { font-weight: 500; color: var(--tinte); }
+
+  /* ── Hinweisbalken ─────────────────────── */
+
+  .vorschau {
+    background: var(--hinweis-grund);
+    border-bottom: 1px solid var(--hinweis-kante);
+    padding: .9rem 1.5rem;
+  }
+  .vorschau__inhalt {
+    max-width: 900px; margin: 0 auto;
+    display: flex; gap: .9rem; align-items: flex-start;
+    font-size: .84rem; line-height: 1.55; color: var(--tinte);
+  }
+  .vorschau__punkt {
+    flex: none; width: 8px; height: 8px; margin-top: .5rem;
+    border-radius: 50%; background: var(--hinweis-kante);
+  }
+  .vorschau b { font-weight: 500; }
+
+  /* ── Kopf ──────────────────────────────── */
+
+  .kopf {
+    border-bottom: 1px solid var(--linie);
+    background: var(--flaeche);
+    padding: 1.9rem 1.5rem;
+  }
+  .kopf__inhalt {
+    max-width: 900px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem; flex-wrap: wrap;
+  }
+  .kopf h1 {
+    font-size: 1.35rem; letter-spacing: .16em; text-transform: uppercase;
+  }
+  .kopf__unter {
+    margin: .5rem 0 0; font-size: .68rem; letter-spacing: var(--sperr);
+    text-transform: uppercase; color: var(--gedaempft);
+  }
+  .kopf__schluessel { display: flex; align-items: center; gap: 1rem; }
+  .schluessel { width: 34px; height: 46px; flex: none; }
+  .schluessel path, .schluessel circle { stroke: var(--tinte); fill: none; stroke-width: 5; }
+
+  .abmelden {
+    font-size: .66rem; letter-spacing: .14em; text-transform: uppercase;
+    text-decoration: none; color: var(--gedaempft);
+    border-bottom: 1px solid var(--linie); padding-bottom: .3em;
+  }
+  .abmelden:hover { color: var(--tinte); border-color: var(--tinte); }
+
+  /* ── Rumpf ─────────────────────────────── */
+
+  .rumpf { max-width: 900px; margin: 0 auto; padding: 2.2rem 1.5rem 5rem; }
+
+  .filter { display: flex; gap: .45rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+  .filter button {
+    cursor: pointer; font-family: inherit;
+    padding: .55em 1.05em;
+    background: var(--flaeche); color: var(--tinte);
+    border: 1px solid var(--linie);
+    font-size: .68rem; font-weight: 400; letter-spacing: .12em; text-transform: uppercase;
+    transition: border-color .18s, background .18s, color .18s;
+  }
+  .filter button:hover { border-color: var(--gedaempft); }
+  .filter button[aria-pressed="true"] {
+    background: var(--dunkel); color: var(--grund); border-color: var(--dunkel);
+  }
+  .filter .zahl { margin-left: .5em; color: var(--leise); font-variant-numeric: tabular-nums; }
+  .filter button[aria-pressed="true"] .zahl { color: inherit; opacity: .65; }
+
+  /* ── Eine Anfrage ──────────────────────── */
+
+  .liste { display: flex; flex-direction: column; gap: 1rem; }
+
+  .karte {
+    background: var(--flaeche);
+    border: 1px solid var(--linie);
+    border-left: 3px solid var(--erledigt);
+    padding: 1.6rem 1.7rem;
+  }
+  .karte[data-stand="neu"] { border-left-color: var(--neu); }
+  .karte[data-stand="arbeit"] { border-left-color: var(--arbeit); }
+  .karte[data-stand="erledigt"] { opacity: .68; }
+
+  .karte__kopf {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 1rem; margin-bottom: 1.3rem;
+  }
+  .karte__kopf h2 { font-size: 1.1rem; font-weight: 500; }
+  .karte__wann {
+    margin: .3rem 0 0; font-size: .74rem; color: var(--gedaempft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .marke {
+    flex: none;
+    font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+    padding: .4em .8em; border: 1px solid currentColor; white-space: nowrap;
+  }
+  .marke[data-stand="neu"] { color: var(--neu); background: var(--neu-grund); }
+  .marke[data-stand="arbeit"] { color: var(--arbeit); background: var(--arbeit-grund); }
+  .marke[data-stand="erledigt"] { color: var(--erledigt); }
+
+  .daten {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: .95rem 1.4rem; margin: 0 0 1.3rem; padding: 1.15rem 0;
+    border-top: 1px solid var(--linie-zart); border-bottom: 1px solid var(--linie-zart);
+  }
+  .daten dt {
+    font-size: .6rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--leise); margin-bottom: .35em;
+  }
+  .daten dd { margin: 0; font-size: .92rem; word-break: break-word; }
+  .daten dd.zahl { font-variant-numeric: tabular-nums; }
+  .daten a { text-decoration: none; border-bottom: 1px solid var(--linie); }
+  .daten a:hover { border-color: var(--tinte); }
+
+  .nachricht {
+    background: var(--grund); border: 1px solid var(--linie-zart);
+    padding: 1rem 1.2rem; margin-bottom: 1.3rem;
+    font-size: .9rem; white-space: pre-line;
+  }
+
+  .werkzeug {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: .8rem; flex-wrap: wrap;
+  }
+  .staende { display: flex; gap: .35rem; flex-wrap: wrap; }
+
+  .klein {
+    cursor: pointer; font-family: inherit;
+    padding: .5em .95em;
+    background: transparent; color: var(--tinte);
+    border: 1px solid var(--linie);
+    font-size: .64rem; letter-spacing: .11em; text-transform: uppercase;
+    transition: border-color .18s, background .18s, color .18s;
+  }
+  .klein:hover { border-color: var(--gedaempft); }
+  .klein[aria-pressed="true"] {
+    background: var(--dunkel); color: var(--grund); border-color: var(--dunkel);
+  }
+  .klein--fort { color: var(--warnung); border-color: var(--linie); }
+  .klein--fort:hover { background: var(--warnung); color: var(--flaeche); border-color: var(--warnung); }
+
+  .notiz { margin-top: 1.1rem; display: flex; gap: .6rem; flex-wrap: wrap; align-items: flex-start; }
+  .notiz textarea {
+    flex: 1 1 240px; min-height: 2.7rem;
+    padding: .65em .85em; font-family: inherit; font-size: .86rem; font-weight: 300;
+    color: var(--tinte); background: var(--grund);
+    border: 1px solid var(--linie); resize: vertical;
+  }
+  .notiz textarea:focus { outline: none; border-color: var(--gedaempft); background: var(--flaeche); }
+
+  .leer {
+    border: 1px dashed var(--linie); padding: 3rem 1.5rem; text-align: center;
+    color: var(--gedaempft); font-size: .92rem;
+  }
+
+  .fuss {
+    max-width: 900px; margin: 0 auto; padding: 0 1.5rem 4rem;
+    font-size: .78rem; line-height: 1.7; color: var(--gedaempft);
+  }
+  .fuss h2 {
+    font-size: .66rem; letter-spacing: var(--sperr); text-transform: uppercase;
+    color: var(--leise); margin-bottom: .9rem;
+  }
+  .fuss ol { margin: 0; padding-left: 1.2rem; }
+  .fuss li { margin-bottom: .5rem; }
+  .fuss code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: .92em; background: var(--flaeche);
+    border: 1px solid var(--linie-zart); padding: .1em .4em;
+  }
+
+  .stand-meldung {
+    position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%) translateY(1rem);
+    background: var(--dunkel); color: var(--grund);
+    padding: .7em 1.3em; font-size: .74rem; letter-spacing: .08em;
+    opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s;
+    z-index: 20; max-width: calc(100vw - 3rem); text-align: center;
+  }
+  .stand-meldung--da { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  @media (max-width: 620px) {
+    .kopf { padding: 1.4rem 1.2rem; }
+    .rumpf { padding: 1.6rem 1.2rem 4rem; }
+    .karte { padding: 1.3rem; }
+    .werkzeug { flex-direction: column; align-items: stretch; }
+    .werkzeug .klein--fort { align-self: flex-end; }
+  }
+
+  /* ── Ergänzungen für die echte Verwaltung ── */
+
+  .tor__karte--breit { max-width: 560px; }
+  .tor__karte--breit p { font-size: .9rem; line-height: 1.7; color: var(--gedaempft); }
+  .tor__karte--breit b { color: var(--tinte); font-weight: 500; }
+
+  .tor__schritte {
+    margin: 1.4rem 0; padding-left: 1.2rem;
+    font-size: .88rem; line-height: 1.75; color: var(--gedaempft);
+  }
+  .tor__schritte li { margin-bottom: .5rem; }
+  .tor__schritte code, .tor__karte--breit code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: .9em; background: var(--grund);
+    border: 1px solid var(--linie-zart); padding: .1em .4em;
+  }
+
+  .tor__meldung {
+    margin: 1.2rem 0 0; font-size: .84rem; line-height: 1.6; min-height: 1.2em;
+    color: var(--gedaempft);
+  }
+  .tor__meldung--gut { color: var(--neu); }
+  .tor__meldung--fehler { color: var(--warnung); }
+
+  /* Abmelden ist hier ein Knopf, kein Verweis */
+  button.abmelden {
+    background: none; border: 0; cursor: pointer; font-family: inherit;
+    padding: 0 0 .3em; border-bottom: 1px solid var(--linie);
+  }
+
+  .schluessel--klein { width: 30px; height: 40px; }

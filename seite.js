@@ -35,11 +35,18 @@ const PREISE = {
 
 const EMPFAENGER = 'info@knopfimmobilien.de';
 
-/* Adresse der Anfragenverwaltung. Ist sie gesetzt, geht das Formular
-   direkt dorthin und der Absender braucht kein E-Mail-Programm.
-   Bleibt sie leer, öffnet sich wie bisher eine vorbereitete E-Mail.
-   Beispiel: 'https://knopfimmobilien.de/anfrage.php'                */
-const ANFRAGE_ZIEL = '';
+/* Wohin die Anfrage geht. Der erste eingerichtete Weg gewinnt;
+   ist keiner eingerichtet, öffnet sich wie bisher eine vorbereitete E-Mail.
+
+   Weg A — eigener Webspace mit PHP:
+       ANFRAGE_ZIEL = 'https://knopfimmobilien.de/verwaltung/anfrage.php'
+
+   Weg B — Supabase: beide Werte aus dem Projekt eintragen
+       (Project Settings → API). Dieselben Werte wie in verwaltung.js.   */
+
+const ANFRAGE_ZIEL        = '';
+const SUPABASE_URL        = '';
+const SUPABASE_SCHLUESSEL = '';
 
 /* ────────────────────────────────────────────── */
 
@@ -275,15 +282,46 @@ const rechner = (function () {
     d.datenschutz = zustimmung.checked;
 
     if (ANFRAGE_ZIEL) {
-      absendenPerLeitung(d);
+      absendenPerLeitung(d, ANFRAGE_ZIEL, rumpfFuerLeitung(d));
+    } else if (SUPABASE_URL && SUPABASE_SCHLUESSEL) {
+      absendenPerLeitung(
+        d,
+        SUPABASE_URL + '/rest/v1/anfragen',
+        rumpfFuerDatenbank(d),
+        {
+          apikey: SUPABASE_SCHLUESSEL,
+          Authorization: 'Bearer ' + SUPABASE_SCHLUESSEL,
+          Prefer: 'return=minimal',
+        }
+      );
     } else {
       absendenPerMailprogramm(d);
     }
   });
 
+  /* Was der eigene Webspace erwartet */
+  function rumpfFuerLeitung(d) {
+    return d;
+  }
+
+  /* Was die Datenbank erwartet — Feldnamen der Tabelle,
+     Stand und Notiz bleiben weg, die setzt nur die Verwaltung. */
+  function rumpfFuerDatenbank(d) {
+    return {
+      name:      d.name,
+      email:     d.email,
+      telefon:   d.telefon || '',
+      ort:       d.ort,
+      einheiten: Number(d.einheiten),
+      baujahr:   d.baujahr ? Number(d.baujahr) : null,
+      umfang:    d.umfang || '',
+      nachricht: d.nachricht || '',
+    };
+  }
+
   /* Weg 1: direkt an die Anfragenverwaltung.
      Der Absender merkt nichts von E-Mail. */
-  async function absendenPerLeitung(d) {
+  async function absendenPerLeitung(d, ziel, rumpf, zusatzKopf = {}) {
     const knopf = formular.querySelector('button[type="submit"]');
     const beschriftung = knopf.textContent;
     knopf.disabled = true;
@@ -291,14 +329,15 @@ const rechner = (function () {
     meldung.textContent = '';
 
     try {
-      const antwort = await fetch(ANFRAGE_ZIEL, {
+      const antwort = await fetch(ziel, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(d)
+        headers: { 'Content-Type': 'application/json', ...zusatzKopf },
+        body: JSON.stringify(rumpf)
       });
       const ergebnis = await antwort.json().catch(() => ({}));
 
-      if (antwort.ok && ergebnis.ok) {
+      // Die Datenbank meldet Erfolg nur über den Status, ohne Inhalt
+      if (antwort.ok && (ergebnis === null || ergebnis.ok || antwort.status === 201 || antwort.status === 204)) {
         formular.reset();
         document.querySelectorAll('.eingabe__fehler').forEach(f => (f.textContent = ''));
         document.querySelectorAll('.eingabe--fehler').forEach(f => f.classList.remove('eingabe--fehler'));

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Anfragen — Knopf Immobilien</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="verwaltung.css?v=271ea995">
+</head>
+<body>
+
+<!-- ══ Noch nicht eingerichtet ══ -->
+<div class="tor" id="einrichten" hidden>
+  <div class="tor__karte tor__karte--breit">
+    <h1>Noch einzurichten</h1>
+    <p class="tor__unter">Knopf Immobilien — Anfragen</p>
+    <p>
+      Diese Seite ist fertig, aber noch mit keiner Datenbank verbunden. Es fehlen
+      zwei Angaben aus dem Supabase-Projekt. Sie stehen dort unter
+      <b>Project Settings → API</b>.
+    </p>
+    <ol class="tor__schritte">
+      <li>In <code>verwaltung.js</code> ganz oben <code>SUPABASE_URL</code> eintragen</li>
+      <li>Darunter <code>SUPABASE_SCHLUESSEL</code> eintragen (der öffentliche Schlüssel)</li>
+      <li>Im SQL-Editor einmal <code>schema.sql</code> ausführen</li>
+      <li>Unter <b>Authentication → URL Configuration</b> die Adresse dieser Seite
+        als erlaubtes Ziel eintragen</li>
+    </ol>
+    <p class="tor__fuss">
+      Der öffentliche Schlüssel darf in dieser Datei stehen — er allein gibt keinen
+      Zugriff auf die Anfragen. Dafür sorgen die Zugriffsregeln in der Datenbank.
+    </p>
+  </div>
+</div>
+
+<!-- ══ Anmeldung ══ -->
+<div class="tor" id="tor" hidden>
+  <div class="tor__karte">
+    <svg class="schluessel" viewBox="0 0 60 82" aria-hidden="true">
+      <circle cx="30" cy="24" r="21"/>
+      <circle cx="23" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+      <circle cx="37" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+      <circle cx="23" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+      <circle cx="37" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+      <path d="M30 45 L30 78"/><path d="M30 62 L46 62"/>
+      <path d="M46 62 L46 70"/><path d="M30 72 L42 72"/>
+    </svg>
+    <h1>Anfragen</h1>
+    <p class="tor__unter">Knopf Immobilien — WEG-Verwaltung</p>
+
+    <form id="anmelden">
+      <label class="tor__feld">
+        <span>E-Mail-Adresse</span>
+        <input type="email" id="adresse" required autocomplete="email"
+               placeholder="info@knopfimmobilien.de">
+      </label>
+      <button type="submit" class="tor__knopf" id="anmelde-knopf">Anmeldelink schicken</button>
+      <p class="tor__meldung" id="tor-meldung" role="status"></p>
+    </form>
+
+    <p class="tor__fuss">
+      Es gibt kein Passwort. Sie bekommen einen Link per E-Mail, ein Klick darauf
+      meldet Sie an. Nur hinterlegte Adressen sehen die Anfragen — ein Anmeldelink
+      allein genügt nicht.
+    </p>
+  </div>
+</div>
+
+<!-- ══ Die Anfragen ══ -->
+<header class="kopf" id="kopf" hidden>
+  <div class="kopf__inhalt">
+    <div class="kopf__schluessel">
+      <svg class="schluessel schluessel--klein" viewBox="0 0 60 82" aria-hidden="true">
+        <circle cx="30" cy="24" r="21"/>
+        <circle cx="23" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="37" cy="17" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="23" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+        <circle cx="37" cy="31" r="2.6" fill="currentColor" stroke="none"/>
+        <path d="M30 45 L30 78"/><path d="M30 62 L46 62"/>
+        <path d="M46 62 L46 70"/><path d="M30 72 L42 72"/>
+      </svg>
+      <div>
+        <h1>Anfragen</h1>
+        <p class="kopf__unter" id="wer">Knopf Immobilien</p>
+      </div>
+    </div>
+    <button type="button" class="abmelden" id="abmelden">Abmelden</button>
+  </div>
+</header>
+
+<main class="rumpf" id="rumpf" hidden>
+  <nav class="filter" id="filter" aria-label="Nach Stand filtern"></nav>
+  <div class="liste" id="liste"></div>
+</main>
+
+<div class="stand-meldung" id="meldung" role="status" aria-live="polite"></div>
+
+<script src="verwaltung.js?v=0a00f303" defer></script>
+</body>
+</html>
