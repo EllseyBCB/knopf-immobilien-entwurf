@@ -1,3 +1,7 @@
-# Entwurfsstand — bitte nicht in den Index aufnehmen.
+# Knopf Immobilien — WEG-Verwaltung
+# Die Seite ist freigegeben und darf aufgenommen werden.
+
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://knopfimmobilien.de/sitemap.xml

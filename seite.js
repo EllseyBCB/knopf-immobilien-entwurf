@@ -7,10 +7,10 @@
 /* ──────────────────────────────────────────────
    HIER ÄNDERN — Preise und Empfängeradresse
    ──────────────────────────────────────────────
-   ACHTUNG: Diese Werte sind PLATZHALTER. Sie stammen nicht von
-   Jim Knopf, sondern sind marktübliche Größenordnungen, damit der
-   Rechner überhaupt etwas anzeigt. Vor dem Livegang ersetzen.
-   Alle Beträge netto, pro Einheit und Monat.                     */
+   Die Preisregel ist am 24.08.2026 von Jim Knopf freigegeben.
+   Alle Beträge netto, pro Einheit und Monat. Wer sie ändert,
+   ändert damit auch das, was der Rechner auf der Startseite
+   ausweist — vorher mit Jim abstimmen.                           */
 
 const PREISE = {
   // Kleinste Anlage: drei Einheiten. Dort gelten diese beiden Eckwerte,
@@ -36,7 +36,14 @@ const PREISE = {
 const EMPFAENGER = 'info@knopfimmobilien.de';
 
 /* Wohin die Anfrage geht. Der erste eingerichtete Weg gewinnt;
-   ist keiner eingerichtet, öffnet sich wie bisher eine vorbereitete E-Mail.
+   ist keiner eingerichtet, öffnet sich eine vorbereitete E-Mail im
+   Programm des Besuchers.
+
+   IM BETRIEB seit 22.09.2026: der E-Mail-Weg. Beide Felder unten sind
+   deshalb bewusst leer. Das ist die datenschutzsparsamste Fassung —
+   es wird nichts gespeichert und es kommt kein Auftragsverarbeiter
+   ins Spiel. Wird das umgestellt, muss der Abschnitt „Anfrageformular"
+   in datenschutz.html mitgeändert werden.
 
    Weg A — eigener Webspace mit PHP:
        ANFRAGE_ZIEL = 'https://knopfimmobilien.de/verwaltung/anfrage.php'

@@ -1,0 +1,79 @@
+# Veröffentlicht die ruhige Fassung auf GitHub Pages.
+#
+# Absicht: Es geht NUR das nach draussen, was zur Website gehört. Die bewegte
+# Fassung, die Vorschau der Anfragenverwaltung und die Arbeitsdateien bleiben
+# im Repository liegen, ohne unter der Kundenadresse erreichbar zu sein.
+#
+# Einmalige Voraussetzung im Repository:
+#   Settings → Pages → Source = "GitHub Actions"
+
+name: Website veröffentlichen
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  bauen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auslieferungsordner zusammenstellen
+        run: |
+          set -eu
+          mkdir -p site
+          # Seiten
+          cp index.html impressum.html datenschutz.html 404.html site/
+          # Gestaltung und Verhalten
+          cp stil.css seite.js site/
+          # Schriften und Bilder
+          cp -r schriften bilder site/
+          # Suchmaschinen und Symbol
+          cp robots.txt sitemap.xml favicon.ico site/
+          # GitHub soll den Ordner unverändert ausliefern
+          touch site/.nojekyll
+
+      - name: Gegenprobe — nichts Unbeabsichtigtes dabei
+        run: |
+          set -eu
+          for verboten in bewegt.html bewegt.css bewegt.js anfragen.html \
+                          verwaltung.html verwaltung.css verwaltung.js \
+                          entwurf.css stempeln.py README.md BILDNACHWEIS.md; do
+            if [ -e "site/$verboten" ]; then
+              echo "FEHLER: $verboten würde veröffentlicht werden."
+              exit 1
+            fi
+          done
+          # Kein Verweis mehr nach draussen zu Google Fonts
+          if grep -rq "fonts.googleapis.com\|fonts.gstatic.com" site/; then
+            echo "FEHLER: Es wird noch eine Schriftart von Google geladen."
+            exit 1
+          fi
+          echo "Auslieferungsordner geprüft:"
+          find site -type f | sort
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  veroeffentlichen:
+    needs: bauen
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - id: pages
+        uses: actions/deploy-pages@v4

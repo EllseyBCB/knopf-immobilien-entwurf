@@ -454,7 +454,13 @@ a.kontakt__zeile:hover .kontakt__wert:not(.tbd) { color: var(--weiss); }
     gap: 1.2rem;
   }
   .anspruch__text { grid-column: 1 / -1; padding-right: 0; margin-bottom: 1rem; }
-  .anspruch__quer { align-self: stretch; }
+
+  /* Das Querbild wird auf Zeilenhöhe gezogen. Damit ist seine Höhe
+     verbindlich, und aspect-ratio würde daraus eine Breite von 4/3 der
+     Höhe rechnen — die ist breiter als die Spalte und schob die ganze
+     Seite waagerecht auf. Das Seitenverhältnis muss hier also weg; die
+     Bildausschnitt-Regel (object-fit: cover) füllt die Fläche ohnehin. */
+  .anspruch__quer { align-self: stretch; aspect-ratio: auto; }
 }
 
 /* ══════════════════════════════════════════════
