@@ -49,27 +49,29 @@ nicht schriftlich belegt (siehe `BILDNACHWEIS.md`).
 
 Die Seite ist auf `https://knopfimmobilien.de` ausgelegt — `canonical`,
 Vorschaubilder und `sitemap.xml` zeigen bereits dorthin. Aufgeschaltet ist
-sie noch nicht, weil die Domain bei checkdomain nur geparkt ist.
+sie noch nicht, weil die Domain bei checkdomain geparkt ist.
 
-In dieser Reihenfolge:
+Es fehlt **nur** die DNS-Änderung im checkdomain-Konto. Was genau einzutragen
+ist, steht in [`DOMAIN-UMSTELLEN.md`](DOMAIN-UMSTELLEN.md) — samt der beiden
+Punkte, die dabei gern übersehen werden: der **AAAA-Eintrag** (sonst sehen
+IPv6-Besucher weiter die Parkseite) und der defekte **MX-Eintrag** auf die
+Domain selbst, der schon heute Post verschluckt.
 
-1. Bei checkdomain die DNS-Einträge setzen:
+Danach im Projektordner:
 
-   | Typ | Name | Wert |
-   |---|---|---|
-   | A | @ | 185.199.108.153 |
-   | A | @ | 185.199.109.153 |
-   | A | @ | 185.199.110.153 |
-   | A | @ | 185.199.111.153 |
-   | CNAME | www | ellseybcb.github.io |
+```
+./domain-pruefen.sh        # sagt, was noch fehlt — ändert nichts
+./domain-aufschalten.sh    # macht den Rest allein
+```
 
-2. Warten, bis `dig +short knopfimmobilien.de` die vier GitHub-Adressen zeigt.
-3. Erst **danach** eine Datei `CNAME` mit dem Inhalt `knopfimmobilien.de` in den
-   Auslieferungsordner aufnehmen (eine Zeile in `deploy.yml`) und pushen.
-   Vorher eingetragen, leitet GitHub die Vorschauadresse auf die noch geparkte
-   Domain um — dann sieht man nur die Parkseite.
-4. In den Repository-Einstellungen unter Pages „Enforce HTTPS" anhaken, sobald
-   GitHub das Zertifikat ausgestellt hat (dauert bis zu 15 Minuten).
+`domain-aufschalten.sh` legt die `CNAME`-Datei an, stösst den Deploy an,
+trägt die Domain bei GitHub ein, wartet auf das Let's-Encrypt-Zertifikat,
+erzwingt HTTPS und prüft am Ende alle drei Adressen durch. Es bricht ab,
+ohne etwas zu ändern, solange DNS nicht steht.
+
+**Die Datei `CNAME` niemals von Hand anlegen.** Sobald sie da ist, leitet
+GitHub auch die Vorschauadresse auf die eigene Domain um. Steht DNS dann noch
+nicht, ist die Website unter beiden Adressen weg.
 
 ## Lokal ansehen
 

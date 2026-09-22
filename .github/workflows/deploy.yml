@@ -41,6 +41,17 @@ jobs:
           cp -r schriften bilder site/
           # Suchmaschinen und Symbol
           cp robots.txt sitemap.xml favicon.ico site/
+          # Eigene Domain: Die Datei CNAME im Projektordner ist der Schalter.
+          # Liegt sie da, liefert GitHub unter der Domain aus. Sie darf erst
+          # angelegt werden, wenn die DNS-Einträge stehen — vorher leitet
+          # GitHub die Vorschauadresse auf die noch geparkte Domain um.
+          # Anlegen nicht von Hand, sondern mit ./domain-aufschalten.sh.
+          if [ -f CNAME ]; then
+            cp CNAME site/
+            echo "Eigene Domain aktiv: $(cat CNAME)"
+          else
+            echo "Keine eigene Domain gesetzt — Auslieferung unter github.io"
+          fi
           # GitHub soll den Ordner unverändert ausliefern
           touch site/.nojekyll
 
