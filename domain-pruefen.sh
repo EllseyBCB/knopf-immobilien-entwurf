@@ -44,11 +44,19 @@ else
 fi
 
 # ── 3. www ──────────────────────────────────────────────────────
+# Zwei Wege sind gleichwertig: ein CNAME auf das Pages-Konto, oder die
+# GitHub-Adressen direkt. checkdomain setzt über „Inklusive www" das
+# Zweite — dagegen ist nichts einzuwenden, GitHub liefert unter beiden
+# Namen aus und stellt auch für beide ein Zertifikat aus.
 ist_www=$(frag "www.$DOMAIN" CNAME)
+ist_www_a=$(frag "www.$DOMAIN" A | sort | tr '\n' ' ')
 if [ "${ist_www%.}" = "$PAGES_KONTO" ]; then
   ja "www zeigt als CNAME auf $PAGES_KONTO"
+elif [ "$ist_www_a" = "$soll_a" ]; then
+  ja "www zeigt mit allen vier A-Einträgen auf GitHub Pages"
+elif [ -n "$ist_www_a" ] && printf '%s\n' "${V4[@]}" | grep -qF "${ist_www_a%% *}"; then
+  ja "www zeigt auf GitHub Pages (${ist_www_a})"
 else
-  ist_www_a=$(frag "www.$DOMAIN" A | tr '\n' ' ')
   nein "www ist noch nicht gesetzt (CNAME: ${ist_www:-keiner}, A: ${ist_www_a:-keine})"
 fi
 
