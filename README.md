@@ -20,7 +20,7 @@ nichts Unbeabsichtigtes darin liegt.
 
 Einmalige Voraussetzung im Repository: **Settings → Pages → Source = „GitHub Actions"**.
 
-## Stand: freigegeben, mit zwei offenen Angaben
+## Stand: live unter knopfimmobilien.de
 
 Erledigt für den Livegang:
 
@@ -32,26 +32,33 @@ Erledigt für den Livegang:
   keine Statistik, Formular über das E-Mail-Programm, Schrift lokal
 - Vorschaubild, Favicon, Sitemap und strukturierte Daten für Google
 - Waagerechter Überlauf auf dem Handy behoben (Querbild der Anspruch-Sektion)
+- Eigene Domain aufgeschaltet, Let's-Encrypt-Zertifikat, HTTPS erzwungen
 
-**Noch einzutragen** — beides hängt nicht an der Betriebsgrösse und ist im HTML
-gelb markiert (`EINZUTRAGEN`):
+### Zwei Angaben, die Jim bewusst weggelassen hat
 
-1. `impressum.html` — Erlaubnis nach § 34c Abs. 1 Satz 1 Nr. 4 GewO samt Name und
-   Anschrift der erteilenden Behörde. § 5 Abs. 1 Nr. 3 DDG verlangt die
-   Aufsichtsbehörde dort, wo die Tätigkeit eine behördliche Zulassung braucht.
-2. `impressum.html` — Berufshaftpflichtversicherung nach § 15 MaBV: Versicherer,
-   Anschrift, räumlicher Geltungsbereich (§ 2 Abs. 1 Nr. 11 DL-InfoV).
+Auf seine Entscheidung stehen **nicht** im Impressum:
 
-Dazu offen, aber nicht blockierend: die Nutzungsrechte an Porträt und Logo sind
-nicht schriftlich belegt (siehe `BILDNACHWEIS.md`).
+1. Die Erlaubnis nach § 34c Abs. 1 Satz 1 Nr. 4 GewO samt erteilender Behörde.
+   § 5 Abs. 1 Nr. 3 DDG verlangt die Aufsichtsbehörde dort, wo die Tätigkeit eine
+   behördliche Zulassung braucht.
+2. Die Berufshaftpflichtversicherung nach § 15 MaBV mit Versicherer und
+   räumlichem Geltungsbereich (§ 2 Abs. 1 Nr. 11 DL-InfoV).
+
+Beide hängen an der Tätigkeit, nicht an der Betriebsgrösse — anders als
+Registereintrag und USt-IdNr., die bei einem Kleingewerbe tatsächlich entfallen.
+Sollen sie später doch hinein, gehören sie in `impressum.html` zwischen
+„Verantwortlich für den Inhalt" und „Berufsrechtliche Regelungen".
+
+Ebenfalls offen, aber nicht blockierend: die Nutzungsrechte an Porträt und Logo
+sind nicht schriftlich belegt (siehe `BILDNACHWEIS.md`).
 
 ## Eigene Domain aufschalten
 
-Die Seite ist auf `https://knopfimmobilien.de` ausgelegt — `canonical`,
-Vorschaubilder und `sitemap.xml` zeigen bereits dorthin. Aufgeschaltet ist
-sie noch nicht, weil die Domain bei checkdomain geparkt ist.
+**Erledigt am 22.09.2026** — die Seite läuft unter `https://knopfimmobilien.de`,
+`www` und HTTP leiten dorthin, das Zertifikat kommt von Let's Encrypt und wird
+von GitHub selbst erneuert.
 
-Es fehlt **nur** die DNS-Änderung im checkdomain-Konto. Was genau einzutragen
+Die Anleitung bleibt hier stehen, falls die Domain je umzieht. Was genau einzutragen
 ist, steht in [`DOMAIN-UMSTELLEN.md`](DOMAIN-UMSTELLEN.md) — samt der beiden
 Punkte, die dabei gern übersehen werden: der **AAAA-Eintrag** (sonst sehen
 IPv6-Besucher weiter die Parkseite) und der defekte **MX-Eintrag** auf die
