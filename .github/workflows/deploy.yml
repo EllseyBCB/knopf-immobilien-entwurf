@@ -55,9 +55,13 @@ jobs:
               exit 1
             fi
           done
-          # Kein Verweis mehr nach draussen zu Google Fonts
-          if grep -rq "fonts.googleapis.com\|fonts.gstatic.com" site/; then
-            echo "FEHLER: Es wird noch eine Schriftart von Google geladen."
+          # Keine echte Ladeanweisung mehr zu Google Fonts. Gesucht wird
+          # nach href/src/url() — nicht nach der blossen Zeichenkette, sonst
+          # schlägt die Prüfung auch bei einem Kommentar an, der die
+          # Herkunft der Schriftdateien dokumentiert.
+          if grep -rEq '(href|src)=["'"'"']?https?://fonts\.(googleapis|gstatic)\.com|url\(["'"'"']?https?://fonts\.(googleapis|gstatic)\.com' site/; then
+            echo "FEHLER: Es wird noch eine Schriftart von Google geladen:"
+            grep -rEn '(href|src)=["'"'"']?https?://fonts\.(googleapis|gstatic)\.com|url\(["'"'"']?https?://fonts\.(googleapis|gstatic)\.com' site/
             exit 1
           fi
           echo "Auslieferungsordner geprüft:"
