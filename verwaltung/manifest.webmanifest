@@ -1,0 +1,17 @@
+{
+  "name": "Knopf Immobilien — Anfragen",
+  "short_name": "Anfragen",
+  "description": "Anfragen aus dem Kontaktformular von knopfimmobilien.de",
+  "lang": "de",
+  "id": "/verwaltung/",
+  "start_url": "/verwaltung/",
+  "scope": "/verwaltung/",
+  "display": "standalone",
+  "background_color": "#F7F6F3",
+  "theme_color": "#F7F6F3",
+  "icons": [
+    { "src": "symbol-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "symbol-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "symbol-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

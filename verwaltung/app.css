@@ -363,3 +363,34 @@
   }
 
   .schluessel--klein { width: 30px; height: 40px; }
+
+  /* ── Anmeldung per Code ── */
+
+  .tor__feld input.tor__code {
+    font-size: 1.5rem; letter-spacing: .4em; text-align: center; font-weight: 400;
+    font-variant-numeric: tabular-nums;
+  }
+  .tor__zurueck {
+    display: block; margin: 1.1rem auto 0;
+    background: none; border: 0; cursor: pointer; font-family: inherit;
+    font-size: .74rem; color: var(--gedaempft);
+    text-decoration: underline; text-underline-offset: .25em;
+  }
+  .tor__meldung:empty { display: none; }
+
+  a.klein { display: inline-block; text-decoration: none; }
+
+  /* ── Als App auf dem Homescreen: Kerbe und Home-Balken freihalten ── */
+
+  .kopf {
+    padding-top: max(1.9rem, env(safe-area-inset-top));
+    padding-left: max(1.5rem, env(safe-area-inset-left));
+    padding-right: max(1.5rem, env(safe-area-inset-right));
+  }
+  .stand-meldung { bottom: max(1.5rem, env(safe-area-inset-bottom)); }
+  @media (max-width: 620px) {
+    .kopf { padding-top: max(1.4rem, env(safe-area-inset-top)); }
+  }
+
+  /* hidden muss gewinnen — .tor setzt sonst display: grid darüber */
+  [hidden] { display: none !important; }

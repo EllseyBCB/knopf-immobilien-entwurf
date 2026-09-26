@@ -1,37 +1,43 @@
 /* ══════════════════════════════════════════════
    Knopf Immobilien — Anfragenverwaltung
    Spricht die Datenbank direkt an, ohne fremde Bibliothek.
+   Läuft als installierbare App unter knopfimmobilien.de/verwaltung/.
    ══════════════════════════════════════════════ */
 
 'use strict';
 
 /* ──────────────────────────────────────────────
-   HIER EINTRAGEN — beides steht im Supabase-Projekt
-   unter Project Settings → API
+   Jims Supabase-Projekt (Frankfurt). Der Schlüssel ist der
+   öffentliche — er allein gibt keinen Zugriff auf die Anfragen,
+   dafür sorgen die Zugriffsregeln der Tabelle „anfragen".
    ────────────────────────────────────────────── */
 
 const SUPABASE_URL        = 'https://bullyvdntyswiixngtzu.supabase.co';
-const SUPABASE_SCHLUESSEL = 'sb_publishable_t54MOAqmBy22rpbP5wNS2w_TCqO9xG8';   // öffentlich, RLS schützt
+const SUPABASE_SCHLUESSEL = 'sb_publishable_t54MOAqmBy22rpbP5wNS2w_TCqO9xG8';
 
 /* ────────────────────────────────────────────── */
 
 const STAENDE = { neu: 'Neu', arbeit: 'In Arbeit', erledigt: 'Erledigt' };
+const SITZUNG_SCHLUESSEL = 'knopf-sitzung';
+const TAKT_MS = 60 * 1000;   // so oft schaut die offene App nach neuen Anfragen
 
 const teile = {
-  einrichten: document.getElementById('einrichten'),
-  tor:        document.getElementById('tor'),
-  kopf:       document.getElementById('kopf'),
-  rumpf:      document.getElementById('rumpf'),
+  tor:   document.getElementById('tor'),
+  kopf:  document.getElementById('kopf'),
+  rumpf: document.getElementById('rumpf'),
 };
 
 const liste        = document.getElementById('liste');
 const filterleiste = document.getElementById('filter');
 const meldungsfeld = document.getElementById('meldung');
 const torMeldung   = document.getElementById('tor-meldung');
+const formAdresse  = document.getElementById('anmelden');
+const formCode     = document.getElementById('bestaetigen');
 
-let sitzung  = null;    // { token, email }
+let sitzung  = null;    // { token, refresh, ablauf, email }
 let anfragen = [];
 let filter   = 'alle';
+let emailFuerCode = '';
 
 /* ══ Kleine Helfer ══ */
 
@@ -53,6 +59,11 @@ function melden(text) {
   meldungsUhr = setTimeout(() => meldungsfeld.classList.remove('stand-meldung--da'), 2800);
 }
 
+function torMelden(text, art) {
+  torMeldung.textContent = text || '';
+  torMeldung.className = 'tor__meldung' + (art ? ' tor__meldung--' + art : '');
+}
+
 function datumDeutsch(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return String(iso);
@@ -62,9 +73,81 @@ function datumDeutsch(iso) {
   }) + ' Uhr';
 }
 
+/* ══ Sitzung ══
+   Liegt im localStorage, damit Jim auf seinem Gerät angemeldet bleibt.
+   Das Zugangsmerkmal gilt eine Stunde und wird vorher still erneuert. */
+
+function sitzungAusAntwort(a) {
+  let email = a.user && a.user.email ? a.user.email : '';
+  if (!email) {
+    try {
+      const nutzlast = JSON.parse(atob(a.access_token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      email = nutzlast.email || '';
+    } catch { /* Adresse ist nur Anzeige */ }
+  }
+  const ablauf = a.expires_at
+    ? Number(a.expires_at) * 1000
+    : Date.now() + (Number(a.expires_in) || 3600) * 1000;
+  return { token: a.access_token, refresh: a.refresh_token, ablauf, email };
+}
+
+function sitzungMerken(s) {
+  sitzung = s;
+  try { localStorage.setItem(SITZUNG_SCHLUESSEL, JSON.stringify(s)); } catch { /* egal */ }
+}
+
+function sitzungHolen() {
+  try {
+    const roh = localStorage.getItem(SITZUNG_SCHLUESSEL);
+    return roh ? JSON.parse(roh) : null;
+  } catch { return null; }
+}
+
+let erneuerung = null;
+function sitzungErneuern() {
+  // Mehrere gleichzeitige Anfragen teilen sich eine Erneuerung
+  if (erneuerung) return erneuerung;
+  erneuerung = (async () => {
+    if (!sitzung || !sitzung.refresh) return false;
+    const antwort = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: { apikey: SUPABASE_SCHLUESSEL, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: sitzung.refresh }),
+    }).catch(() => null);
+    if (!antwort) throw new Error('offline');
+    if (!antwort.ok) return false;
+    sitzungMerken(sitzungAusAntwort(await antwort.json()));
+    return true;
+  })().finally(() => { erneuerung = null; });
+  return erneuerung;
+}
+
+function abmelden(hinweis) {
+  if (sitzung && sitzung.token) {
+    fetch(SUPABASE_URL + '/auth/v1/logout', {
+      method: 'POST',
+      headers: { apikey: SUPABASE_SCHLUESSEL, Authorization: 'Bearer ' + sitzung.token },
+    }).catch(() => {});
+  }
+  sitzung = null;
+  anfragen = [];
+  try { localStorage.removeItem(SITZUNG_SCHLUESSEL); } catch { /* egal */ }
+  abzeichenSetzen(0);
+  schrittAdresse();
+  zeigen('tor');
+  torMelden(hinweis, hinweis ? 'fehler' : '');
+}
+
 /* ══ Zugriff auf die Datenbank ══ */
 
-async function datenbank(pfad, einstellungen = {}) {
+async function datenbank(pfad, einstellungen = {}, zweiterVersuch = false) {
+  if (sitzung && sitzung.ablauf - Date.now() < 60 * 1000) {
+    if (!(await sitzungErneuern())) {
+      abmelden('Die Anmeldung ist abgelaufen. Bitte neu anmelden.');
+      throw new Error('nicht angemeldet');
+    }
+  }
+
   const antwort = await fetch(SUPABASE_URL + pfad, {
     ...einstellungen,
     headers: {
@@ -76,6 +159,9 @@ async function datenbank(pfad, einstellungen = {}) {
   });
 
   if (antwort.status === 401 || antwort.status === 403) {
+    if (!zweiterVersuch && (await sitzungErneuern().catch(() => false))) {
+      return datenbank(pfad, einstellungen, true);
+    }
     abmelden('Die Anmeldung ist abgelaufen. Bitte neu anmelden.');
     throw new Error('nicht angemeldet');
   }
@@ -86,17 +172,18 @@ async function datenbank(pfad, einstellungen = {}) {
   return antwort.status === 204 ? null : antwort.json().catch(() => null);
 }
 
-/* ══ Anmeldung ══ */
+/* ══ Anmeldung per Code ══
+   Kein Link: Auf dem iPhone öffnet ein Link aus der Mail Safari statt
+   der installierten App. Den Code tippt man dort ein, wo man ist. */
 
-async function anmeldelinkSchicken(email) {
+async function codeSchicken(email) {
   const antwort = await fetch(SUPABASE_URL + '/auth/v1/otp', {
     method: 'POST',
     headers: { apikey: SUPABASE_SCHLUESSEL, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email,
-      create_user: false,          // niemand legt sich hier selbst ein Konto an
-      options: { email_redirect_to: location.href.split('#')[0] },
-    }),
+    // Beim allerersten Mal legt das Jims Konto an. Fremde Adressen können
+    // sich so zwar ein Konto machen, sehen aber nichts — die Tabelle gibt
+    // nur info@knopfimmobilien.de frei.
+    body: JSON.stringify({ email, create_user: true }),
   });
   if (!antwort.ok) {
     const text = await antwort.text().catch(() => '');
@@ -104,44 +191,35 @@ async function anmeldelinkSchicken(email) {
   }
 }
 
+async function codePruefen(email, code) {
+  const antwort = await fetch(SUPABASE_URL + '/auth/v1/verify', {
+    method: 'POST',
+    headers: { apikey: SUPABASE_SCHLUESSEL, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type: 'email', email, token: code }),
+  });
+  if (!antwort.ok) return null;
+  return sitzungAusAntwort(await antwort.json());
+}
+
 function sitzungAusAdresse() {
-  // Nach dem Klick auf den Anmeldelink hängt das Zugangsmerkmal hinter dem #
+  // Falls doch jemand auf den Link in der Mail klickt: der landet hier
   if (!location.hash.includes('access_token')) return null;
-  const teileHash = new URLSearchParams(location.hash.slice(1));
-  const token = teileHash.get('access_token');
-  if (!token) return null;
-
-  // Aus der Adresszeile entfernen, damit es nicht im Verlauf stehen bleibt
+  const werte = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
   history.replaceState(null, '', location.pathname + location.search);
-
-  let email = '';
-  try {
-    const nutzlast = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-    email = nutzlast.email || '';
-  } catch { /* Adresse ist nur Anzeige, nicht kritisch */ }
-
-  return { token, email };
+  return werte.access_token ? sitzungAusAntwort(werte) : null;
 }
 
-function sitzungMerken(s) {
-  sitzung = s;
-  try { sessionStorage.setItem('knopf-sitzung', JSON.stringify(s)); } catch { /* egal */ }
+function schrittAdresse() {
+  formAdresse.hidden = false;
+  formCode.hidden = true;
+  document.getElementById('code').value = '';
 }
 
-function sitzungHolen() {
-  try {
-    const roh = sessionStorage.getItem('knopf-sitzung');
-    return roh ? JSON.parse(roh) : null;
-  } catch { return null; }
-}
-
-function abmelden(hinweis) {
-  sitzung = null;
-  anfragen = [];
-  try { sessionStorage.removeItem('knopf-sitzung'); } catch { /* egal */ }
-  zeigen('tor');
-  torMeldung.textContent = hinweis || '';
-  torMeldung.className = 'tor__meldung' + (hinweis ? ' tor__meldung--fehler' : '');
+function schrittCode(email) {
+  emailFuerCode = email;
+  formAdresse.hidden = true;
+  formCode.hidden = false;
+  document.getElementById('code').focus();
 }
 
 /* ══ Anfragen laden und darstellen ══ */
@@ -154,11 +232,7 @@ async function ladenUndZeichnen() {
     melden('Die Anfragen konnten nicht geladen werden.');
     return;
   }
-
-  if (anfragen.length === 0 && sitzung) {
-    // Leere Liste kann auch heißen: angemeldet, aber nicht freigeschaltet
-    document.getElementById('wer').textContent = sitzung.email || 'Knopf Immobilien';
-  }
+  document.getElementById('wer').textContent = sitzung.email || 'Knopf Immobilien';
   zeichnen();
 }
 
@@ -168,13 +242,27 @@ function zaehler() {
   return z;
 }
 
+function abzeichenSetzen(zahl) {
+  document.title = (zahl ? `(${zahl}) ` : '') + 'Anfragen — Knopf Immobilien';
+  try {
+    if (zahl && navigator.setAppBadge) navigator.setAppBadge(zahl).catch(() => {});
+    else if (navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {});
+  } catch { /* nicht jedes Gerät kann das */ }
+}
+
 function filterZeichnen() {
   const z = zaehler();
+  abzeichenSetzen(z.neu);
   const punkte = [['alle', 'Alle'], ...Object.entries(STAENDE)];
   filterleiste.innerHTML = punkte.map(([wert, name]) => `
     <button type="button" data-filter="${wert}" aria-pressed="${filter === wert}">
       ${name}<span class="zahl">${z[wert] || 0}</span>
     </button>`).join('');
+}
+
+function antwortLink(a) {
+  const betreff = `Ihre Anfrage zur WEG-Verwaltung — ${a.ort}`;
+  return `mailto:${encodeURIComponent(a.email)}?subject=${encodeURIComponent(betreff)}`;
 }
 
 function karte(a) {
@@ -207,7 +295,10 @@ function karte(a) {
             <button type="button" class="klein" data-stand-setzen="${wert}"
                     aria-pressed="${a.stand === wert}">${name}</button>`).join('')}
         </div>
-        <button type="button" class="klein klein--fort" data-fort="1">Löschen</button>
+        <div class="staende">
+          <a class="klein" href="${maskieren(antwortLink(a))}">Antworten</a>
+          <button type="button" class="klein klein--fort" data-fort="1">Löschen</button>
+        </div>
       </div>
       <div class="notiz">
         <textarea data-notiz="1" rows="2"
@@ -227,26 +318,55 @@ function zeichnen() {
 
 /* ══ Bedienung ══ */
 
-document.getElementById('anmelden').addEventListener('submit', async (e) => {
+formAdresse.addEventListener('submit', async (e) => {
   e.preventDefault();
   const knopf = document.getElementById('anmelde-knopf');
-  const email = document.getElementById('adresse').value.trim();
+  const email = document.getElementById('adresse').value.trim().toLowerCase();
   knopf.disabled = true;
-  torMeldung.className = 'tor__meldung';
-  torMeldung.textContent = 'Wird verschickt …';
+  torMelden('Wird verschickt …');
 
   try {
-    await anmeldelinkSchicken(email);
-    torMeldung.textContent =
-      'Der Anmeldelink ist unterwegs. Bitte im Postfach nachsehen — er gilt eine Stunde.';
-    torMeldung.classList.add('tor__meldung--gut');
-  } catch {
-    torMeldung.textContent =
-      'Das hat nicht geklappt. Ist die Adresse für diese Verwaltung freigeschaltet?';
-    torMeldung.classList.add('tor__meldung--fehler');
+    await codeSchicken(email);
+    schrittCode(email);
+    torMelden(`Der Code ist unterwegs an ${email}. Bitte auch im Spam-Ordner nachsehen.`, 'gut');
+  } catch (fehler) {
+    torMelden(/rate|429|seconds/i.test(fehler.message)
+      ? 'Zu viele Versuche. Bitte ein paar Minuten warten.'
+      : 'Das hat nicht geklappt. Bitte die Adresse prüfen.', 'fehler');
   } finally {
     knopf.disabled = false;
   }
+});
+
+formCode.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const knopf = document.getElementById('code-knopf');
+  const code = document.getElementById('code').value.replace(/\D/g, '');
+  knopf.disabled = true;
+  torMelden('Wird geprüft …');
+
+  try {
+    const neu = await codePruefen(emailFuerCode, code);
+    if (!neu) {
+      torMelden('Der Code stimmt nicht oder ist abgelaufen.', 'fehler');
+      return;
+    }
+    sitzungMerken(neu);
+    torMelden('');
+    schrittAdresse();
+    zeigen('liste');
+    ladenUndZeichnen();
+  } catch {
+    torMelden('Keine Verbindung. Bitte noch einmal versuchen.', 'fehler');
+  } finally {
+    knopf.disabled = false;
+  }
+});
+
+document.getElementById('andere-adresse').addEventListener('click', () => {
+  schrittAdresse();
+  torMelden('');
+  document.getElementById('adresse').focus();
 });
 
 document.getElementById('abmelden').addEventListener('click', () => abmelden());
@@ -309,6 +429,7 @@ liste.addEventListener('input', (e) => {
 
   clearTimeout(notizUhr);
   notizUhr = setTimeout(async () => {
+    notizUhr = null;
     try {
       await datenbank(`/rest/v1/anfragen?id=eq.${encodeURIComponent(id)}`, {
         method: 'PATCH',
@@ -322,14 +443,23 @@ liste.addEventListener('input', (e) => {
   }, 900);
 });
 
+/* ══ Von selbst aktuell bleiben ══
+   Beim Zurückkehren in die App und jede Minute, solange sie offen ist.
+   Nicht, während eine Notiz getippt wird — das Neuzeichnen würde das
+   Feld unter den Fingern austauschen. */
+
+function nachsehen() {
+  if (!sitzung || document.hidden) return;
+  if (notizUhr || (document.activeElement && document.activeElement.matches('[data-notiz]'))) return;
+  ladenUndZeichnen();
+}
+
+document.addEventListener('visibilitychange', nachsehen);
+setInterval(nachsehen, TAKT_MS);
+
 /* ══ Start ══ */
 
 (function start() {
-  if (!SUPABASE_URL || !SUPABASE_SCHLUESSEL) {
-    zeigen('einrichten');
-    return;
-  }
-
   const ausAdresse = sitzungAusAdresse();
   if (ausAdresse) sitzungMerken(ausAdresse);
   else sitzung = sitzungHolen();

@@ -1,7 +1,8 @@
 # Veröffentlicht die ruhige Fassung auf GitHub Pages.
 #
-# Absicht: Es geht NUR das nach draussen, was zur Website gehört. Die bewegte
-# Fassung, die Vorschau der Anfragenverwaltung und die Arbeitsdateien bleiben
+# Absicht: Es geht NUR das nach draussen, was zur Website gehört — plus die
+# Anfragenverwaltung unter /verwaltung/. Die bewegte
+# Fassung, die Vorschau der Anfragenverwaltung mit Beispieldaten und die Arbeitsdateien bleiben
 # im Repository liegen, ohne unter der Kundenadresse erreichbar zu sein.
 #
 # Einmalige Voraussetzung im Repository:
@@ -39,6 +40,8 @@ jobs:
           cp stil.css seite.js site/
           # Schriften und Bilder
           cp -r schriften bilder site/
+          # Anfragenverwaltung als App für Jim (Daten nur nach Anmeldung)
+          cp -r verwaltung site/
           # Suchmaschinen und Symbol
           cp robots.txt sitemap.xml favicon.ico site/
           # Eigene Domain: Die Datei CNAME im Projektordner ist der Schalter.
@@ -59,7 +62,6 @@ jobs:
         run: |
           set -eu
           for verboten in bewegt.html bewegt.css bewegt.js anfragen.html \
-                          verwaltung.html verwaltung.css verwaltung.js \
                           entwurf.css stempeln.py README.md BILDNACHWEIS.md; do
             if [ -e "site/$verboten" ]; then
               echo "FEHLER: $verboten würde veröffentlicht werden."

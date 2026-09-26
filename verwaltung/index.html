@@ -2,37 +2,22 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Anfragen — Knopf Immobilien</title>
-<link rel="stylesheet" href="schriften/schriften.css?v=d4e82f87">
-<link rel="stylesheet" href="verwaltung.css?v=271ea995">
+<meta name="theme-color" content="#F7F6F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131316" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Anfragen">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="symbol-192.png" type="image/png">
+<link rel="apple-touch-icon" href="symbol-180.png">
+<link rel="stylesheet" href="/schriften/schriften.css?v=d4e82f87">
+<link rel="stylesheet" href="app.css?v=4c8662dc">
 </head>
 <body>
-
-<!-- ══ Noch nicht eingerichtet ══ -->
-<div class="tor" id="einrichten" hidden>
-  <div class="tor__karte tor__karte--breit">
-    <h1>Noch einzurichten</h1>
-    <p class="tor__unter">Knopf Immobilien — Anfragen</p>
-    <p>
-      Diese Seite ist fertig, aber noch mit keiner Datenbank verbunden. Es fehlen
-      zwei Angaben aus dem Supabase-Projekt. Sie stehen dort unter
-      <b>Project Settings → API</b>.
-    </p>
-    <ol class="tor__schritte">
-      <li>In <code>verwaltung.js</code> ganz oben <code>SUPABASE_URL</code> eintragen</li>
-      <li>Darunter <code>SUPABASE_SCHLUESSEL</code> eintragen (der öffentliche Schlüssel)</li>
-      <li>Im SQL-Editor einmal <code>schema.sql</code> ausführen</li>
-      <li>Unter <b>Authentication → URL Configuration</b> die Adresse dieser Seite
-        als erlaubtes Ziel eintragen</li>
-    </ol>
-    <p class="tor__fuss">
-      Der öffentliche Schlüssel darf in dieser Datei stehen — er allein gibt keinen
-      Zugriff auf die Anfragen. Dafür sorgen die Zugriffsregeln in der Datenbank.
-    </p>
-  </div>
-</div>
 
 <!-- ══ Anmeldung ══ -->
 <div class="tor" id="tor" hidden>
@@ -55,14 +40,25 @@
         <input type="email" id="adresse" required autocomplete="email"
                placeholder="info@knopfimmobilien.de">
       </label>
-      <button type="submit" class="tor__knopf" id="anmelde-knopf">Anmeldelink schicken</button>
-      <p class="tor__meldung" id="tor-meldung" role="status"></p>
+      <button type="submit" class="tor__knopf" id="anmelde-knopf">Code schicken</button>
     </form>
 
+    <form id="bestaetigen" hidden>
+      <label class="tor__feld">
+        <span>Code aus der E-Mail</span>
+        <input type="text" id="code" required inputmode="numeric"
+               autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10"
+               class="tor__code" placeholder="123456">
+      </label>
+      <button type="submit" class="tor__knopf" id="code-knopf">Anmelden</button>
+      <button type="button" class="tor__zurueck" id="andere-adresse">Andere Adresse</button>
+    </form>
+
+    <p class="tor__meldung" id="tor-meldung" role="status"></p>
+
     <p class="tor__fuss">
-      Es gibt kein Passwort. Sie bekommen einen Link per E-Mail, ein Klick darauf
-      meldet Sie an. Nur hinterlegte Adressen sehen die Anfragen — ein Anmeldelink
-      allein genügt nicht.
+      Es gibt kein Passwort. Sie bekommen einen Code per E-Mail und bleiben danach
+      auf diesem Gerät angemeldet. Nur die hinterlegte Adresse sieht die Anfragen.
     </p>
   </div>
 </div>
@@ -96,6 +92,6 @@
 
 <div class="stand-meldung" id="meldung" role="status" aria-live="polite"></div>
 
-<script src="verwaltung.js?v=0c0b3da3" defer></script>
+<script src="app.js?v=05c12c82" defer></script>
 </body>
 </html>

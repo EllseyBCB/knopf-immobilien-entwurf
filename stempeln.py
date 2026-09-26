@@ -11,11 +11,12 @@ unberührt.  Aufruf:  python3 stempeln.py
 import hashlib, pathlib, re
 
 SEITEN = ['index.html', 'bewegt.html', 'impressum.html', 'datenschutz.html',
-          'verwaltung.html', 'anfragen.html', '404.html']
+          'verwaltung/index.html', 'anfragen.html', '404.html']
 MUSTER = re.compile(r'((?:href|src)=")([\w./-]+\.(?:css|js))(?:\?v=[0-9a-f]+)?(")')
 
-def stempel(name: str) -> str:
-    p = pathlib.Path(name)
+def stempel(name: str, seite: pathlib.Path) -> str:
+    # "/schriften/x.css" gilt ab Projektwurzel, "app.css" neben der Seite
+    p = pathlib.Path('.' + name) if name.startswith('/') else seite.parent / name
     return hashlib.sha1(p.read_bytes()).hexdigest()[:8] if p.exists() else ''
 
 for seite in SEITEN:
@@ -24,7 +25,7 @@ for seite in SEITEN:
         continue
     def ersetzen(t):
         datei = t.group(2)
-        v = stempel(datei)
+        v = stempel(datei, p)
         return f'{t.group(1)}{datei}{"?v=" + v if v else ""}{t.group(3)}'
     neu = MUSTER.sub(ersetzen, p.read_text())
     p.write_text(neu)

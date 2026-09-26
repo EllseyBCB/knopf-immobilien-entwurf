@@ -14,7 +14,8 @@ nichts Unbeabsichtigtes darin liegt.
 |---|---|
 | `index.html` (ruhige Fassung) | `bewegt.html` + `bewegt.css` + `bewegt.js` |
 | `impressum.html`, `datenschutz.html`, `404.html` | `anfragen.html` (Vorschau mit Beispieldaten) |
-| `stil.css`, `seite.js` | `verwaltung.html` + `verwaltung.css` + `verwaltung.js` |
+| `stil.css`, `seite.js` | |
+| `verwaltung/` (Jims Anfragen-App) | |
 | `schriften/`, `bilder/` | `stempeln.py`, `README.md`, `BILDNACHWEIS.md` |
 | `robots.txt`, `sitemap.xml`, `favicon.ico` | |
 
@@ -112,7 +113,7 @@ bilder/             Porträt, Logo, vier Architekturaufnahmen, Vorschaubild
 BILDNACHWEIS.md     Herkunft und Lizenz jedes Bildes
 
 bewegt.*            zweite Fassung mit starken Scroll-Effekten (nicht im Netz)
-verwaltung.*        Anfragenverwaltung über Supabase (nicht eingerichtet)
+verwaltung/         Jims Anfragen-App, live unter /verwaltung/
 anfragen.html       Vorschau der Verwaltung mit Beispieldaten (nicht im Netz)
 ```
 
@@ -135,3 +136,22 @@ Scheitert die Übertragung, öffnet sich das E-Mail-Programm des Besuchers.
 Der Abschnitt „Anfrageformular" in `datenschutz.html` beschreibt diesen Stand.
 Offen: Jim muss den Auftragsverarbeitungsvertrag (DPA) von Supabase
 abschliessen — Dashboard → Organization Settings → Legal Documents.
+
+## Die Anfragen-App für Jim
+
+Liegt unter **https://knopfimmobilien.de/verwaltung/** und lässt sich als App
+installieren: iPhone → Safari → Teilen → „Zum Home-Bildschirm"; Android/Chrome
+und Mac/Chrome → „App installieren".
+
+- Anmeldung per **Code aus der E-Mail** (kein Link — der öffnet auf dem iPhone
+  Safari statt der App). Danach bleibt das Gerät angemeldet; die Sitzung
+  erneuert sich selbst.
+- Das Konto entsteht bei der ersten Anmeldung. Sehen kann nur
+  `info@knopfimmobilien.de` etwas, das regelt die Tabelle, nicht die App.
+- Stand setzen, Notiz, Antworten (öffnet Mail), Löschen. Die offene App schaut
+  jede Minute nach Neuem; die Zahl neuer Anfragen steht am App-Symbol.
+
+**Voraussetzung in Supabase** (Authentication → Emails): die Vorlagen
+„Magic Link" und „Confirm signup" müssen den Code enthalten, z. B.
+`<p>Ihr Anmeldecode: <strong>{{ .Token }}</strong></p>`. Ohne diese Zeile
+kommt nur ein Link, und der führt nicht in die App.
