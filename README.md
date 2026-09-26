@@ -122,7 +122,16 @@ Drei Wege stehen in `seite.js` bereit, der erste eingerichtete gewinnt:
 `ANFRAGE_ZIEL` (PHP auf eigenem Webspace), `SUPABASE_URL` +
 `SUPABASE_SCHLUESSEL`, sonst das E-Mail-Programm des Besuchers.
 
-**Im Betrieb ist der E-Mail-Weg.** Beide Felder sind deshalb leer. Das ist die
-datenschutzsparsamste Fassung: nichts wird gespeichert, kein
-Auftragsverarbeiter kommt ins Spiel. Wird umgestellt, muss der Abschnitt
-„Anfrageformular" in `datenschutz.html` mitgeändert werden.
+**Im Betrieb ist der Supabase-Weg** (seit 26.09.2026). Das Projekt liegt in
+Jims eigenem Supabase-Konto (Organisation „Knopf Immobilien", Projekt
+`bullyvdntyswiixngtzu`, Frankfurt). Tabelle `anfragen`:
+
+- Besucher (`anon`) dürfen **nur einfügen**, und nur die Formularfelder —
+  `stand` und `notiz` können von aussen nicht gesetzt werden, Lesen ist gesperrt.
+- Angemeldet darf nur `info@knopfimmobilien.de` lesen, ändern, löschen.
+- Eingänge sieht Jim im Supabase-Dashboard unter Table Editor → `anfragen`.
+
+Scheitert die Übertragung, öffnet sich das E-Mail-Programm des Besuchers.
+Der Abschnitt „Anfrageformular" in `datenschutz.html` beschreibt diesen Stand.
+Offen: Jim muss den Auftragsverarbeitungsvertrag (DPA) von Supabase
+abschliessen — Dashboard → Organization Settings → Legal Documents.

@@ -39,10 +39,10 @@ const EMPFAENGER = 'info@knopfimmobilien.de';
    ist keiner eingerichtet, öffnet sich eine vorbereitete E-Mail im
    Programm des Besuchers.
 
-   IM BETRIEB seit 22.09.2026: der E-Mail-Weg. Beide Felder unten sind
-   deshalb bewusst leer. Das ist die datenschutzsparsamste Fassung —
-   es wird nichts gespeichert und es kommt kein Auftragsverarbeiter
-   ins Spiel. Wird das umgestellt, muss der Abschnitt „Anfrageformular"
+   IM BETRIEB seit 26.09.2026: Weg B, Jims Supabase-Projekt in Frankfurt
+   (Tabelle „anfragen"). Besucher dürfen dort nur einfügen, nie lesen.
+   Scheitert die Übertragung, springt das E-Mail-Programm ein.
+   Wird das umgestellt, muss der Abschnitt „Anfrageformular"
    in datenschutz.html mitgeändert werden.
 
    Weg A — eigener Webspace mit PHP:
@@ -52,8 +52,8 @@ const EMPFAENGER = 'info@knopfimmobilien.de';
        (Project Settings → API). Dieselben Werte wie in verwaltung.js.   */
 
 const ANFRAGE_ZIEL        = '';
-const SUPABASE_URL        = '';
-const SUPABASE_SCHLUESSEL = '';
+const SUPABASE_URL        = 'https://bullyvdntyswiixngtzu.supabase.co';
+const SUPABASE_SCHLUESSEL = 'sb_publishable_t54MOAqmBy22rpbP5wNS2w_TCqO9xG8';
 
 /* ────────────────────────────────────────────── */
 

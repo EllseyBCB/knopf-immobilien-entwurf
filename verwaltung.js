@@ -10,8 +10,8 @@
    unter Project Settings → API
    ────────────────────────────────────────────── */
 
-const SUPABASE_URL        = '';   // z. B. 'https://abcdefgh.supabase.co'
-const SUPABASE_SCHLUESSEL = '';   // der öffentliche Schlüssel (anon / publishable)
+const SUPABASE_URL        = 'https://bullyvdntyswiixngtzu.supabase.co';
+const SUPABASE_SCHLUESSEL = 'sb_publishable_t54MOAqmBy22rpbP5wNS2w_TCqO9xG8';   // öffentlich, RLS schützt
 
 /* ────────────────────────────────────────────── */
 
