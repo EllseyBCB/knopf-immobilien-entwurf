@@ -15,7 +15,7 @@
 <link rel="icon" href="symbol-192.png" type="image/png">
 <link rel="apple-touch-icon" href="symbol-180.png">
 <link rel="stylesheet" href="/schriften/schriften.css?v=d4e82f87">
-<link rel="stylesheet" href="app.css?v=4c8662dc">
+<link rel="stylesheet" href="app.css?v=a7e70e49">
 </head>
 <body>
 
@@ -37,28 +37,21 @@
     <form id="anmelden">
       <label class="tor__feld">
         <span>E-Mail-Adresse</span>
-        <input type="email" id="adresse" required autocomplete="email"
+        <input type="email" id="adresse" required autocomplete="username"
                placeholder="info@knopfimmobilien.de">
       </label>
-      <button type="submit" class="tor__knopf" id="anmelde-knopf">Code schicken</button>
-    </form>
-
-    <form id="bestaetigen" hidden>
       <label class="tor__feld">
-        <span>Code aus der E-Mail</span>
-        <input type="text" id="code" required inputmode="numeric"
-               autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10"
-               class="tor__code" placeholder="123456">
+        <span>Passwort</span>
+        <input type="password" id="passwort" required autocomplete="current-password">
       </label>
-      <button type="submit" class="tor__knopf" id="code-knopf">Anmelden</button>
-      <button type="button" class="tor__zurueck" id="andere-adresse">Andere Adresse</button>
+      <button type="submit" class="tor__knopf" id="anmelde-knopf">Anmelden</button>
     </form>
 
     <p class="tor__meldung" id="tor-meldung" role="status"></p>
 
     <p class="tor__fuss">
-      Es gibt kein Passwort. Sie bekommen einen Code per E-Mail und bleiben danach
-      auf diesem Gerät angemeldet. Nur die hinterlegte Adresse sieht die Anfragen.
+      Einmal angemeldet, bleibt dieses Gerät angemeldet. Nur die hinterlegte
+      Adresse sieht die Anfragen.
     </p>
   </div>
 </div>
@@ -81,8 +74,21 @@
         <p class="kopf__unter" id="wer">Knopf Immobilien</p>
       </div>
     </div>
-    <button type="button" class="abmelden" id="abmelden">Abmelden</button>
+    <div class="kopf__knoepfe">
+      <button type="button" class="abmelden" id="passwort-oeffnen">Passwort ändern</button>
+      <button type="button" class="abmelden" id="abmelden">Abmelden</button>
+    </div>
   </div>
+  <form class="neues-passwort" id="neues-passwort" hidden>
+    <label class="tor__feld">
+      <span>Neues Passwort (mindestens 8 Zeichen)</span>
+      <input type="password" id="passwort-neu" required minlength="8" autocomplete="new-password">
+    </label>
+    <div class="staende">
+      <button type="submit" class="klein" aria-pressed="true">Speichern</button>
+      <button type="button" class="klein" id="passwort-abbrechen">Abbrechen</button>
+    </div>
+  </form>
 </header>
 
 <main class="rumpf" id="rumpf" hidden>
@@ -92,6 +98,6 @@
 
 <div class="stand-meldung" id="meldung" role="status" aria-live="polite"></div>
 
-<script src="app.js?v=05c12c82" defer></script>
+<script src="app.js?v=cd7bc219" defer></script>
 </body>
 </html>

@@ -143,15 +143,11 @@ Liegt unter **https://knopfimmobilien.de/verwaltung/** und lässt sich als App
 installieren: iPhone → Safari → Teilen → „Zum Home-Bildschirm"; Android/Chrome
 und Mac/Chrome → „App installieren".
 
-- Anmeldung per **Code aus der E-Mail** (kein Link — der öffnet auf dem iPhone
-  Safari statt der App). Danach bleibt das Gerät angemeldet; die Sitzung
-  erneuert sich selbst.
-- Das Konto entsteht bei der ersten Anmeldung. Sehen kann nur
+- Anmeldung mit **E-Mail und Passwort** (`info@knopfimmobilien.de`). Danach
+  bleibt das Gerät angemeldet, die Sitzung erneuert sich selbst. Über
+  „Passwort ändern" im Kopf setzt Jim ein eigenes.
+- Das Konto wird im Supabase-Dashboard angelegt (Authentication → Users →
+  Add user → Create new user, „Auto confirm"). Sehen kann nur
   `info@knopfimmobilien.de` etwas, das regelt die Tabelle, nicht die App.
 - Stand setzen, Notiz, Antworten (öffnet Mail), Löschen. Die offene App schaut
   jede Minute nach Neuem; die Zahl neuer Anfragen steht am App-Symbol.
-
-**Voraussetzung in Supabase** (Authentication → Emails): die Vorlagen
-„Magic Link" und „Confirm signup" müssen den Code enthalten, z. B.
-`<p>Ihr Anmeldecode: <strong>{{ .Token }}</strong></p>`. Ohne diese Zeile
-kommt nur ein Link, und der führt nicht in die App.

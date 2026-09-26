@@ -32,12 +32,11 @@ const filterleiste = document.getElementById('filter');
 const meldungsfeld = document.getElementById('meldung');
 const torMeldung   = document.getElementById('tor-meldung');
 const formAdresse  = document.getElementById('anmelden');
-const formCode     = document.getElementById('bestaetigen');
+const formPasswort = document.getElementById('neues-passwort');
 
 let sitzung  = null;    // { token, refresh, ablauf, email }
 let anfragen = [];
 let filter   = 'alle';
-let emailFuerCode = '';
 
 /* ══ Kleine Helfer ══ */
 
@@ -133,7 +132,7 @@ function abmelden(hinweis) {
   anfragen = [];
   try { localStorage.removeItem(SITZUNG_SCHLUESSEL); } catch { /* egal */ }
   abzeichenSetzen(0);
-  schrittAdresse();
+  formPasswort.hidden = true;
   zeigen('tor');
   torMelden(hinweis, hinweis ? 'fehler' : '');
 }
@@ -172,54 +171,34 @@ async function datenbank(pfad, einstellungen = {}, zweiterVersuch = false) {
   return antwort.status === 204 ? null : antwort.json().catch(() => null);
 }
 
-/* ══ Anmeldung per Code ══
-   Kein Link: Auf dem iPhone öffnet ein Link aus der Mail Safari statt
-   der installierten App. Den Code tippt man dort ein, wo man ist. */
+/* ══ Anmeldung mit E-Mail und Passwort ══ */
 
-async function codeSchicken(email) {
-  const antwort = await fetch(SUPABASE_URL + '/auth/v1/otp', {
+async function anmeldenMitPasswort(email, passwort) {
+  const antwort = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
     method: 'POST',
     headers: { apikey: SUPABASE_SCHLUESSEL, 'Content-Type': 'application/json' },
-    // Beim allerersten Mal legt das Jims Konto an. Fremde Adressen können
-    // sich so zwar ein Konto machen, sehen aber nichts — die Tabelle gibt
-    // nur info@knopfimmobilien.de frei.
-    body: JSON.stringify({ email, create_user: true }),
+    body: JSON.stringify({ email, password: passwort }),
+  });
+  if (antwort.status === 400 || antwort.status === 401) return null;
+  if (!antwort.ok) throw new Error(String(antwort.status));
+  return sitzungAusAntwort(await antwort.json());
+}
+
+async function passwortAendern(neu) {
+  if (sitzung.ablauf - Date.now() < 60 * 1000) await sitzungErneuern();
+  const antwort = await fetch(SUPABASE_URL + '/auth/v1/user', {
+    method: 'PUT',
+    headers: {
+      apikey: SUPABASE_SCHLUESSEL,
+      Authorization: 'Bearer ' + sitzung.token,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ password: neu }),
   });
   if (!antwort.ok) {
     const text = await antwort.text().catch(() => '');
     throw new Error(text || String(antwort.status));
   }
-}
-
-async function codePruefen(email, code) {
-  const antwort = await fetch(SUPABASE_URL + '/auth/v1/verify', {
-    method: 'POST',
-    headers: { apikey: SUPABASE_SCHLUESSEL, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ type: 'email', email, token: code }),
-  });
-  if (!antwort.ok) return null;
-  return sitzungAusAntwort(await antwort.json());
-}
-
-function sitzungAusAdresse() {
-  // Falls doch jemand auf den Link in der Mail klickt: der landet hier
-  if (!location.hash.includes('access_token')) return null;
-  const werte = Object.fromEntries(new URLSearchParams(location.hash.slice(1)));
-  history.replaceState(null, '', location.pathname + location.search);
-  return werte.access_token ? sitzungAusAntwort(werte) : null;
-}
-
-function schrittAdresse() {
-  formAdresse.hidden = false;
-  formCode.hidden = true;
-  document.getElementById('code').value = '';
-}
-
-function schrittCode(email) {
-  emailFuerCode = email;
-  formAdresse.hidden = true;
-  formCode.hidden = false;
-  document.getElementById('code').focus();
 }
 
 /* ══ Anfragen laden und darstellen ══ */
@@ -322,38 +301,19 @@ formAdresse.addEventListener('submit', async (e) => {
   e.preventDefault();
   const knopf = document.getElementById('anmelde-knopf');
   const email = document.getElementById('adresse').value.trim().toLowerCase();
-  knopf.disabled = true;
-  torMelden('Wird verschickt …');
-
-  try {
-    await codeSchicken(email);
-    schrittCode(email);
-    torMelden(`Der Code ist unterwegs an ${email}. Bitte auch im Spam-Ordner nachsehen.`, 'gut');
-  } catch (fehler) {
-    torMelden(/rate|429|seconds/i.test(fehler.message)
-      ? 'Zu viele Versuche. Bitte ein paar Minuten warten.'
-      : 'Das hat nicht geklappt. Bitte die Adresse prüfen.', 'fehler');
-  } finally {
-    knopf.disabled = false;
-  }
-});
-
-formCode.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const knopf = document.getElementById('code-knopf');
-  const code = document.getElementById('code').value.replace(/\D/g, '');
+  const passwortFeld = document.getElementById('passwort');
   knopf.disabled = true;
   torMelden('Wird geprüft …');
 
   try {
-    const neu = await codePruefen(emailFuerCode, code);
+    const neu = await anmeldenMitPasswort(email, passwortFeld.value);
     if (!neu) {
-      torMelden('Der Code stimmt nicht oder ist abgelaufen.', 'fehler');
+      torMelden('E-Mail-Adresse oder Passwort stimmen nicht.', 'fehler');
       return;
     }
+    passwortFeld.value = '';
     sitzungMerken(neu);
     torMelden('');
-    schrittAdresse();
     zeigen('liste');
     ladenUndZeichnen();
   } catch {
@@ -363,10 +323,30 @@ formCode.addEventListener('submit', async (e) => {
   }
 });
 
-document.getElementById('andere-adresse').addEventListener('click', () => {
-  schrittAdresse();
-  torMelden('');
-  document.getElementById('adresse').focus();
+document.getElementById('passwort-oeffnen').addEventListener('click', () => {
+  formPasswort.hidden = !formPasswort.hidden;
+  if (!formPasswort.hidden) document.getElementById('passwort-neu').focus();
+});
+
+document.getElementById('passwort-abbrechen').addEventListener('click', () => {
+  formPasswort.hidden = true;
+  document.getElementById('passwort-neu').value = '';
+});
+
+formPasswort.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const feld = document.getElementById('passwort-neu');
+  if (feld.value.length < 8) { melden('Bitte mindestens 8 Zeichen.'); return; }
+  try {
+    await passwortAendern(feld.value);
+    feld.value = '';
+    formPasswort.hidden = true;
+    melden('Neues Passwort gespeichert.');
+  } catch (fehler) {
+    melden(/same|different/i.test(fehler.message)
+      ? 'Das ist schon das aktuelle Passwort.'
+      : 'Das Passwort konnte nicht geändert werden.');
+  }
 });
 
 document.getElementById('abmelden').addEventListener('click', () => abmelden());
@@ -460,9 +440,7 @@ setInterval(nachsehen, TAKT_MS);
 /* ══ Start ══ */
 
 (function start() {
-  const ausAdresse = sitzungAusAdresse();
-  if (ausAdresse) sitzungMerken(ausAdresse);
-  else sitzung = sitzungHolen();
+  sitzung = sitzungHolen();
 
   if (!sitzung) { zeigen('tor'); return; }
 
